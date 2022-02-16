@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>Chapitre 14 reactive | Développement d’une application Shiny sur l’artificialisation</title>
+  <meta name="description" content="Développement pas à pas d’une application Shiny permettant de voir l’évolution de l’artificialisation en région Sud" />
+  <meta name="generator" content="bookdown 0.24 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="Chapitre 14 reactive | Développement d’une application Shiny sur l’artificialisation" />
+  <meta property="og:type" content="book" />
+  
+  
+  <meta property="og:description" content="Développement pas à pas d’une application Shiny permettant de voir l’évolution de l’artificialisation en région Sud" />
+  <meta name="github-repo" content="rstudio/bookdown-demo" />
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Chapitre 14 reactive | Développement d’une application Shiny sur l’artificialisation" />
+  
+  <meta name="twitter:description" content="Développement pas à pas d’une application Shiny permettant de voir l’évolution de l’artificialisation en région Sud" />
+  
+
+<meta name="author" content="Mathieu Rajerison" />
+
+
+<meta name="date" content="2022-02-16" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="carto.html"/>
+<link rel="next" href="refactoring.html"/>
+<script src="libs/header-attrs-2.9/header-attrs.js"></script>
+<script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+<link href="libs/anchor-sections-1.0.1/anchor-sections.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.0.1/anchor-sections.js"></script>
+<script src="libs/htmlwidgets-1.5.3/htmlwidgets.js"></script>
+<script src="libs/d3-3.5.3/d3.min.js"></script>
+<link href="libs/colorbrewer-1/colorbrewer.css" rel="stylesheet" />
+<script src="libs/colorbrewer-1/colorbrewer.js"></script>
+<link href="libs/streamgraph-1/streamgraph.css" rel="stylesheet" />
+<script src="libs/streamgraph-binding-0.9.0/streamgraph.js"></script>
+
+
+<style type="text/css">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li><p style="text-align:center;"><img src="https://mtes-mct.github.io/parcours-r/assets/images/logo_marianne_fond_blanc.png" style="width:100px;"/></p></li>
+<li><a href="./index.html">Développement d'une application Shiny</a></li>
+
+<li class="divider"></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i>Introduction</a>
+<ul>
+<li class="chapter" data-level="0.1" data-path="index.html"><a href="index.html#le-parcours-de-formation"><i class="fa fa-check"></i><b>0.1</b> Le parcours de formation</a></li>
+<li class="chapter" data-level="0.2" data-path="index.html"><a href="index.html#objectifs-de-ce-module"><i class="fa fa-check"></i><b>0.2</b> Objectifs de ce module</a></li>
+</ul></li>
+<li class="chapter" data-level="1" data-path="quelques-exemples-de-datavisualisation.html"><a href="quelques-exemples-de-datavisualisation.html"><i class="fa fa-check"></i><b>1</b> Quelques exemples de Datavisualisation</a>
+<ul>
+<li class="chapter" data-level="1.1" data-path="quelques-exemples-de-datavisualisation.html"><a href="quelques-exemples-de-datavisualisation.html#la-carte-du-choléra-de-john-snow"><i class="fa fa-check"></i><b>1.1</b> La carte du choléra de John Snow</a>
+<ul>
+<li class="chapter" data-level="1.1.1" data-path="quelques-exemples-de-datavisualisation.html"><a href="quelques-exemples-de-datavisualisation.html#charles-joseph-minard"><i class="fa fa-check"></i><b>1.1.1</b> Charles Joseph Minard</a></li>
+</ul></li>
+<li class="chapter" data-level="1.2" data-path="quelques-exemples-de-datavisualisation.html"><a href="quelques-exemples-de-datavisualisation.html#la-correspondance-de-stefanie-posavec-et-giorgia-lupi"><i class="fa fa-check"></i><b>1.2</b> La correspondance de Stefanie Posavec et Giorgia Lupi</a></li>
+<li class="chapter" data-level="1.3" data-path="quelques-exemples-de-datavisualisation.html"><a href="quelques-exemples-de-datavisualisation.html#le-suivi-de-lépidémie-en-ligne-de-guillaume-rozier"><i class="fa fa-check"></i><b>1.3</b> Le suivi de l’épidémie en ligne de Guillaume Rozier</a></li>
+<li class="chapter" data-level="1.4" data-path="quelques-exemples-de-datavisualisation.html"><a href="quelques-exemples-de-datavisualisation.html#le-data-driven-dj-de-brian-foo"><i class="fa fa-check"></i><b>1.4</b> Le Data-Driven DJ de Brian Foo</a></li>
+<li class="chapter" data-level="1.5" data-path="quelques-exemples-de-datavisualisation.html"><a href="quelques-exemples-de-datavisualisation.html#quelques-théories-et-théoriciens"><i class="fa fa-check"></i><b>1.5</b> Quelques théories et théoriciens</a>
+<ul>
+<li class="chapter" data-level="1.5.1" data-path="quelques-exemples-de-datavisualisation.html"><a href="quelques-exemples-de-datavisualisation.html#jacques-bertin"><i class="fa fa-check"></i><b>1.5.1</b> Jacques Bertin</a></li>
+</ul></li>
+<li class="chapter" data-level="1.6" data-path="quelques-exemples-de-datavisualisation.html"><a href="quelques-exemples-de-datavisualisation.html#leland-wilkinson"><i class="fa fa-check"></i><b>1.6</b> Leland Wilkinson</a></li>
+<li class="chapter" data-level="1.7" data-path="quelques-exemples-de-datavisualisation.html"><a href="quelques-exemples-de-datavisualisation.html#edward-tufte"><i class="fa fa-check"></i><b>1.7</b> Edward Tufte</a></li>
+<li class="chapter" data-level="1.8" data-path="quelques-exemples-de-datavisualisation.html"><a href="quelques-exemples-de-datavisualisation.html#des-outils-pour-visualiser"><i class="fa fa-check"></i><b>1.8</b> Des outils pour visualiser</a>
+<ul>
+<li class="chapter" data-level="1.8.1" data-path="quelques-exemples-de-datavisualisation.html"><a href="quelques-exemples-de-datavisualisation.html#outils-bureau"><i class="fa fa-check"></i><b>1.8.1</b> Outils bureau</a></li>
+<li class="chapter" data-level="1.8.2" data-path="quelques-exemples-de-datavisualisation.html"><a href="quelques-exemples-de-datavisualisation.html#python"><i class="fa fa-check"></i><b>1.8.2</b> Python</a></li>
+<li class="chapter" data-level="1.8.3" data-path="quelques-exemples-de-datavisualisation.html"><a href="quelques-exemples-de-datavisualisation.html#r"><i class="fa fa-check"></i><b>1.8.3</b> R</a></li>
+<li class="chapter" data-level="1.8.4" data-path="quelques-exemples-de-datavisualisation.html"><a href="quelques-exemples-de-datavisualisation.html#javascript"><i class="fa fa-check"></i><b>1.8.4</b> Javascript</a></li>
+</ul></li>
+<li class="chapter" data-level="1.9" data-path="quelques-exemples-de-datavisualisation.html"><a href="quelques-exemples-de-datavisualisation.html#des-dataviz-cerema-faites-sous-shiny"><i class="fa fa-check"></i><b>1.9</b> Des dataviz Cerema faites sous Shiny</a>
+<ul>
+<li class="chapter" data-level="1.9.1" data-path="quelques-exemples-de-datavisualisation.html"><a href="quelques-exemples-de-datavisualisation.html#trafic-covid"><i class="fa fa-check"></i><b>1.9.1</b> trafic covid</a></li>
+<li class="chapter" data-level="1.9.2" data-path="quelques-exemples-de-datavisualisation.html"><a href="quelques-exemples-de-datavisualisation.html#cartofriches"><i class="fa fa-check"></i><b>1.9.2</b> Cartofriches</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="2" data-path="lecture-des-données-de-flux.html"><a href="lecture-des-données-de-flux.html"><i class="fa fa-check"></i><b>2</b> Lecture des données de flux</a>
+<ul>
+<li class="chapter" data-level="2.1" data-path="lecture-des-données-de-flux.html"><a href="lecture-des-données-de-flux.html#téléchargement-de-la-donnée"><i class="fa fa-check"></i><b>2.1</b> Téléchargement de la donnée</a></li>
+<li class="chapter" data-level="2.2" data-path="lecture-des-données-de-flux.html"><a href="lecture-des-données-de-flux.html#chargement-des-librairies"><i class="fa fa-check"></i><b>2.2</b> Chargement des librairies</a></li>
+<li class="chapter" data-level="2.3" data-path="lecture-des-données-de-flux.html"><a href="lecture-des-données-de-flux.html#lecture-de-la-donnée"><i class="fa fa-check"></i><b>2.3</b> Lecture de la donnée</a></li>
+<li class="chapter" data-level="2.4" data-path="lecture-des-données-de-flux.html"><a href="lecture-des-données-de-flux.html#contrôle"><i class="fa fa-check"></i><b>2.4</b> Contrôle</a></li>
+<li class="chapter" data-level="2.5" data-path="lecture-des-données-de-flux.html"><a href="lecture-des-données-de-flux.html#relecture-du-fichier"><i class="fa fa-check"></i><b>2.5</b> Relecture du fichier</a></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="traitement-de-la-donnée.html"><a href="traitement-de-la-donnée.html"><i class="fa fa-check"></i><b>3</b> Traitement de la donnée</a>
+<ul>
+<li class="chapter" data-level="3.1" data-path="traitement-de-la-donnée.html"><a href="traitement-de-la-donnée.html#lecture-des-données"><i class="fa fa-check"></i><b>3.1</b> Lecture des données</a></li>
+<li class="chapter" data-level="3.2" data-path="traitement-de-la-donnée.html"><a href="traitement-de-la-donnée.html#sélection-des-colonnes"><i class="fa fa-check"></i><b>3.2</b> Sélection des colonnes</a></li>
+<li class="chapter" data-level="3.3" data-path="traitement-de-la-donnée.html"><a href="traitement-de-la-donnée.html#transformation-du-format-wide-vers-long"><i class="fa fa-check"></i><b>3.3</b> Transformation du format wide vers long</a>
+<ul>
+<li class="chapter" data-level="3.3.1" data-path="traitement-de-la-donnée.html"><a href="traitement-de-la-donnée.html#wide"><i class="fa fa-check"></i><b>3.3.1</b> Wide</a></li>
+<li class="chapter" data-level="3.3.2" data-path="traitement-de-la-donnée.html"><a href="traitement-de-la-donnée.html#long"><i class="fa fa-check"></i><b>3.3.2</b> Long</a></li>
+<li class="chapter" data-level="3.3.3" data-path="traitement-de-la-donnée.html"><a href="traitement-de-la-donnée.html#transformation-au-format-long-avec-gather"><i class="fa fa-check"></i><b>3.3.3</b> Transformation au format <em>long</em> avec <code>gather</code></a></li>
+</ul></li>
+<li class="chapter" data-level="3.4" data-path="traitement-de-la-donnée.html"><a href="traitement-de-la-donnée.html#année-et-destination-du-flux"><i class="fa fa-check"></i><b>3.4</b> Année et destination du flux</a></li>
+<li class="chapter" data-level="3.5" data-path="traitement-de-la-donnée.html"><a href="traitement-de-la-donnée.html#retraitement"><i class="fa fa-check"></i><b>3.5</b> Retraitement</a></li>
+<li class="chapter" data-level="3.6" data-path="traitement-de-la-donnée.html"><a href="traitement-de-la-donnée.html#fonction-getstatsflux"><i class="fa fa-check"></i><b>3.6</b> Fonction <code>getStatsFlux</code></a></li>
+<li class="chapter" data-level="3.7" data-path="traitement-de-la-donnée.html"><a href="traitement-de-la-donnée.html#data-engineering"><i class="fa fa-check"></i><b>3.7</b> Data Engineering</a></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="palette-de-couleurs.html"><a href="palette-de-couleurs.html"><i class="fa fa-check"></i><b>4</b> Palette de couleurs</a>
+<ul>
+<li class="chapter" data-level="4.1" data-path="palette-de-couleurs.html"><a href="palette-de-couleurs.html#lecture-des-données-avec-transformation"><i class="fa fa-check"></i><b>4.1</b> Lecture des données avec transformation</a></li>
+<li class="chapter" data-level="4.2" data-path="palette-de-couleurs.html"><a href="palette-de-couleurs.html#premier-graphique"><i class="fa fa-check"></i><b>4.2</b> Premier graphique</a></li>
+<li class="chapter" data-level="4.3" data-path="palette-de-couleurs.html"><a href="palette-de-couleurs.html#quelques-améliorations"><i class="fa fa-check"></i><b>4.3</b> Quelques améliorations</a></li>
+<li class="chapter" data-level="4.4" data-path="palette-de-couleurs.html"><a href="palette-de-couleurs.html#couleurs-hcl-hue-chroma-luminance"><i class="fa fa-check"></i><b>4.4</b> Couleurs HCL (Hue Chroma Luminance)</a>
+<ul>
+<li class="chapter" data-level="4.4.1" data-path="palette-de-couleurs.html"><a href="palette-de-couleurs.html#a-propos"><i class="fa fa-check"></i><b>4.4.1</b> A propos</a></li>
+<li class="chapter" data-level="4.4.2" data-path="palette-de-couleurs.html"><a href="palette-de-couleurs.html#nos-couleurs"><i class="fa fa-check"></i><b>4.4.2</b> Nos couleurs</a></li>
+<li class="chapter" data-level="4.4.3" data-path="palette-de-couleurs.html"><a href="palette-de-couleurs.html#assistants"><i class="fa fa-check"></i><b>4.4.3</b> Assistants</a></li>
+<li class="chapter" data-level="4.4.4" data-path="palette-de-couleurs.html"><a href="palette-de-couleurs.html#utilisation-dans-notre-graphique"><i class="fa fa-check"></i><b>4.4.4</b> Utilisation dans notre graphique</a></li>
+</ul></li>
+<li class="chapter" data-level="4.5" data-path="palette-de-couleurs.html"><a href="palette-de-couleurs.html#export-de-la-palette"><i class="fa fa-check"></i><b>4.5</b> Export de la palette</a></li>
+<li class="chapter" data-level="4.6" data-path="palette-de-couleurs.html"><a href="palette-de-couleurs.html#une-couleur-plus-punchy"><i class="fa fa-check"></i><b>4.6</b> Une couleur plus “punchy”</a></li>
+<li class="chapter" data-level="4.7" data-path="palette-de-couleurs.html"><a href="palette-de-couleurs.html#couleurs-cerema"><i class="fa fa-check"></i><b>4.7</b> Couleurs Cerema</a></li>
+</ul></li>
+<li class="chapter" data-level="5" data-path="streamgraph.html"><a href="streamgraph.html"><i class="fa fa-check"></i><b>5</b> Streamgraph</a>
+<ul>
+<li class="chapter" data-level="5.1" data-path="streamgraph.html"><a href="streamgraph.html#lecture-des-données-1"><i class="fa fa-check"></i><b>5.1</b> Lecture des données</a></li>
+<li class="chapter" data-level="5.2" data-path="streamgraph.html"><a href="streamgraph.html#installation-de-la-librairie-streamgraph"><i class="fa fa-check"></i><b>5.2</b> Installation de la librairie <code>streamgraph</code></a></li>
+<li class="chapter" data-level="5.3" data-path="streamgraph.html"><a href="streamgraph.html#streamgraph-1"><i class="fa fa-check"></i><b>5.3</b> Streamgraph</a></li>
+<li class="chapter" data-level="5.4" data-path="streamgraph.html"><a href="streamgraph.html#fonction-makestream"><i class="fa fa-check"></i><b>5.4</b> Fonction <code>makeStream</code></a></li>
+<li class="chapter" data-level="5.5" data-path="streamgraph.html"><a href="streamgraph.html#dimensions-dune-dataviz"><i class="fa fa-check"></i><b>5.5</b> Dimensions d’une dataviz</a></li>
+</ul></li>
+<li class="chapter" data-level="6" data-path="spatial.html"><a href="spatial.html"><i class="fa fa-check"></i><b>6</b> Spatial</a>
+<ul>
+<li class="chapter" data-level="6.1" data-path="spatial.html"><a href="spatial.html#librairie-sf"><i class="fa fa-check"></i><b>6.1</b> Librairie sf</a></li>
+<li class="chapter" data-level="6.2" data-path="spatial.html"><a href="spatial.html#contours-administratifs"><i class="fa fa-check"></i><b>6.2</b> Contours administratifs</a></li>
+<li class="chapter" data-level="6.3" data-path="spatial.html"><a href="spatial.html#export"><i class="fa fa-check"></i><b>6.3</b> Export</a></li>
+<li class="chapter" data-level="6.4" data-path="spatial.html"><a href="spatial.html#coordonnées-au-clic"><i class="fa fa-check"></i><b>6.4</b> Coordonnées au clic</a></li>
+<li class="chapter" data-level="6.5" data-path="spatial.html"><a href="spatial.html#point"><i class="fa fa-check"></i><b>6.5</b> Point</a></li>
+<li class="chapter" data-level="6.6" data-path="spatial.html"><a href="spatial.html#commune-localisée-au-clic"><i class="fa fa-check"></i><b>6.6</b> Commune localisée au clic</a></li>
+<li class="chapter" data-level="6.7" data-path="spatial.html"><a href="spatial.html#fonction-getcommcenter"><i class="fa fa-check"></i><b>6.7</b> Fonction <code>getCommCenter</code></a></li>
+</ul></li>
+<li class="chapter" data-level="7" data-path="préambule.html"><a href="préambule.html"><i class="fa fa-check"></i><b>7</b> Préambule</a>
+<ul>
+<li class="chapter" data-level="7.1" data-path="préambule.html"><a href="préambule.html#template-de-base"><i class="fa fa-check"></i><b>7.1</b> Template de base</a></li>
+<li class="chapter" data-level="7.2" data-path="préambule.html"><a href="préambule.html#pose-les-bases"><i class="fa fa-check"></i><b>7.2</b> Pose les bases</a></li>
+<li class="chapter" data-level="7.3" data-path="préambule.html"><a href="préambule.html#server.r"><i class="fa fa-check"></i><b>7.3</b> <code>server.R</code></a></li>
+<li class="chapter" data-level="7.4" data-path="préambule.html"><a href="préambule.html#lecture-des-données-et-liste-déroulante-des-communes"><i class="fa fa-check"></i><b>7.4</b> Lecture des données et liste déroulante des communes</a></li>
+<li class="chapter" data-level="7.5" data-path="préambule.html"><a href="préambule.html#ui.r"><i class="fa fa-check"></i><b>7.5</b> <code>ui.R</code></a></li>
+<li class="chapter" data-level="7.6" data-path="préambule.html"><a href="préambule.html#affiche-un-tableau-des-résultats"><i class="fa fa-check"></i><b>7.6</b> Affiche un tableau des résultats</a></li>
+<li class="chapter" data-level="7.7" data-path="préambule.html"><a href="préambule.html#ui.r-1"><i class="fa fa-check"></i><b>7.7</b> <code>ui.R</code></a></li>
+<li class="chapter" data-level="7.8" data-path="préambule.html"><a href="préambule.html#server.r-1"><i class="fa fa-check"></i><b>7.8</b> <code>server.R</code></a></li>
+</ul></li>
+<li class="chapter" data-level="8" data-path="dataviz.html"><a href="dataviz.html"><i class="fa fa-check"></i><b>8</b> Dataviz</a>
+<ul>
+<li class="chapter" data-level="8.1" data-path="dataviz.html"><a href="dataviz.html#ajoute-le-stream"><i class="fa fa-check"></i><b>8.1</b> Ajoute le stream</a></li>
+<li class="chapter" data-level="8.2" data-path="dataviz.html"><a href="dataviz.html#ui.r-2"><i class="fa fa-check"></i><b>8.2</b> <code>ui.R</code></a></li>
+<li class="chapter" data-level="8.3" data-path="dataviz.html"><a href="dataviz.html#server.r-2"><i class="fa fa-check"></i><b>8.3</b> <code>server.R</code></a></li>
+</ul></li>
+<li class="chapter" data-level="9" data-path="contexte.html"><a href="contexte.html"><i class="fa fa-check"></i><b>9</b> Contexte</a>
+<ul>
+<li class="chapter" data-level="9.1" data-path="contexte.html"><a href="contexte.html#ajoute-les-infos-communales"><i class="fa fa-check"></i><b>9.1</b> Ajoute les infos communales</a></li>
+<li class="chapter" data-level="9.2" data-path="contexte.html"><a href="contexte.html#ui.r-3"><i class="fa fa-check"></i><b>9.2</b> <code>ui.R</code></a></li>
+<li class="chapter" data-level="9.3" data-path="contexte.html"><a href="contexte.html#server.r-3"><i class="fa fa-check"></i><b>9.3</b> <code>server.R</code></a></li>
+<li class="chapter" data-level="9.4" data-path="contexte.html"><a href="contexte.html#ajoute-la-légende"><i class="fa fa-check"></i><b>9.4</b> Ajoute la légende</a></li>
+<li class="chapter" data-level="9.5" data-path="contexte.html"><a href="contexte.html#server.r-4"><i class="fa fa-check"></i><b>9.5</b> <code>server.R</code></a></li>
+</ul></li>
+<li class="chapter" data-level="10" data-path="charte.html"><a href="charte.html"><i class="fa fa-check"></i><b>10</b> Charte</a>
+<ul>
+<li class="chapter" data-level="10.1" data-path="charte.html"><a href="charte.html#titre-avec-couleurs-cerema"><i class="fa fa-check"></i><b>10.1</b> Titre avec couleurs cerema</a></li>
+</ul></li>
+<li class="chapter" data-level="11" data-path="contexte-1.html"><a href="contexte-1.html"><i class="fa fa-check"></i><b>11</b> Contexte</a>
+<ul>
+<li class="chapter" data-level="11.1" data-path="contexte-1.html"><a href="contexte-1.html#ajoute-la-surface-artificialisée-totale"><i class="fa fa-check"></i><b>11.1</b> Ajoute la surface artificialisée totale</a></li>
+</ul></li>
+<li class="chapter" data-level="12" data-path="reactive.html"><a href="reactive.html"><i class="fa fa-check"></i><b>12</b> <code>reactive</code></a>
+<ul>
+<li class="chapter" data-level="12.1" data-path="reactive.html"><a href="reactive.html#ajout-de-reactive-fcomm"><i class="fa fa-check"></i><b>12.1</b> Ajout de reactive <code>fComm</code></a></li>
+<li class="chapter" data-level="12.2" data-path="reactive.html"><a href="reactive.html#server.r-5"><i class="fa fa-check"></i><b>12.2</b> <code>server.R</code></a></li>
+</ul></li>
+<li class="chapter" data-level="13" data-path="carto.html"><a href="carto.html"><i class="fa fa-check"></i><b>13</b> Carto</a>
+<ul>
+<li class="chapter" data-level="13.1" data-path="carto.html"><a href="carto.html#ajoute-la-carte-leaflet"><i class="fa fa-check"></i><b>13.1</b> Ajoute la carte leaflet</a></li>
+<li class="chapter" data-level="13.2" data-path="carto.html"><a href="carto.html#ui.r-4"><i class="fa fa-check"></i><b>13.2</b> <code>ui.R</code></a></li>
+<li class="chapter" data-level="13.3" data-path="carto.html"><a href="carto.html#server.r-6"><i class="fa fa-check"></i><b>13.3</b> <code>server.R</code></a></li>
+<li class="chapter" data-level="13.4" data-path="carto.html"><a href="carto.html#centre-la-carte-sur-paca"><i class="fa fa-check"></i><b>13.4</b> Centre la carte sur PACA</a></li>
+<li class="chapter" data-level="13.5" data-path="carto.html"><a href="carto.html#server.r-7"><i class="fa fa-check"></i><b>13.5</b> <code>server.R</code></a></li>
+<li class="chapter" data-level="13.6" data-path="carto.html"><a href="carto.html#ajoute-les-fonds-de-carte"><i class="fa fa-check"></i><b>13.6</b> Ajoute les fonds de carte</a></li>
+<li class="chapter" data-level="13.7" data-path="carto.html"><a href="carto.html#server.r-8"><i class="fa fa-check"></i><b>13.7</b> <code>server.R</code></a></li>
+<li class="chapter" data-level="13.8" data-path="carto.html"><a href="carto.html#coordonnées-au-clic-1"><i class="fa fa-check"></i><b>13.8</b> Coordonnées au clic</a></li>
+<li class="chapter" data-level="13.9" data-path="carto.html"><a href="carto.html#ui.r-5"><i class="fa fa-check"></i><b>13.9</b> <code>ui.R</code></a></li>
+<li class="chapter" data-level="13.10" data-path="carto.html"><a href="carto.html#server.r-9"><i class="fa fa-check"></i><b>13.10</b> <code>server.R</code></a></li>
+</ul></li>
+<li class="chapter" data-level="14" data-path="reactive-1.html"><a href="reactive-1.html"><i class="fa fa-check"></i><b>14</b> <code>reactive</code></a>
+<ul>
+<li class="chapter" data-level="14.1" data-path="reactive-1.html"><a href="reactive-1.html#rend-codeinsee-reactive"><i class="fa fa-check"></i><b>14.1</b> Rend codeInsee reactive</a></li>
+<li class="chapter" data-level="14.2" data-path="reactive-1.html"><a href="reactive-1.html#ajoute-le-reactive"><i class="fa fa-check"></i><b>14.2</b> Ajoute le reactive</a></li>
+<li class="chapter" data-level="14.3" data-path="reactive-1.html"><a href="reactive-1.html#server.r-10"><i class="fa fa-check"></i><b>14.3</b> <code>server.R</code></a></li>
+</ul></li>
+<li class="chapter" data-level="15" data-path="refactoring.html"><a href="refactoring.html"><i class="fa fa-check"></i><b>15</b> Refactoring</a>
+<ul>
+<li class="chapter" data-level="15.1" data-path="refactoring.html"><a href="refactoring.html#fix-ajoute-req"><i class="fa fa-check"></i><b>15.1</b> Fix : ajoute req</a></li>
+</ul></li>
+<li class="chapter" data-level="16" data-path="carto-1.html"><a href="carto-1.html"><i class="fa fa-check"></i><b>16</b> Carto</a>
+<ul>
+<li class="chapter" data-level="16.1" data-path="carto-1.html"><a href="carto-1.html#ajoute-un-marqueur"><i class="fa fa-check"></i><b>16.1</b> Ajoute un marqueur</a></li>
+<li class="chapter" data-level="16.2" data-path="carto-1.html"><a href="carto-1.html#ajoute-le-contour-de-la-commune"><i class="fa fa-check"></i><b>16.2</b> Ajoute le contour de la commune</a></li>
+<li class="chapter" data-level="16.3" data-path="carto-1.html"><a href="carto-1.html#va-vers-la-commune"><i class="fa fa-check"></i><b>16.3</b> Va vers la commune</a></li>
+<li class="chapter" data-level="16.4" data-path="carto-1.html"><a href="carto-1.html#la-liste-déroulante-permet-daller-vers-une-commune"><i class="fa fa-check"></i><b>16.4</b> La liste déroulante permet d’aller vers une commune</a></li>
+<li class="chapter" data-level="16.5" data-path="carto-1.html"><a href="carto-1.html#ajoute-lélément-vide-à-la-liste-des-communes"><i class="fa fa-check"></i><b>16.5</b> Ajoute l’élément vide à la liste des communes</a></li>
+</ul></li>
+<li class="chapter" data-level="17" data-path="refactoring-1.html"><a href="refactoring-1.html"><i class="fa fa-check"></i><b>17</b> Refactoring</a>
+<ul>
+<li class="chapter" data-level="17.1" data-path="refactoring-1.html"><a href="refactoring-1.html#précise-quil-faut-cliquer-sur-la-carte-pour-afficher-les-stats"><i class="fa fa-check"></i><b>17.1</b> Précise qu’il faut cliquer sur la carte pour afficher les stats</a></li>
+</ul></li>
+<li class="chapter" data-level="18" data-path="dataviz-1.html"><a href="dataviz-1.html"><i class="fa fa-check"></i><b>18</b> Dataviz</a>
+<ul>
+<li class="chapter" data-level="18.1" data-path="dataviz-1.html"><a href="dataviz-1.html#ajoute-la-treemap-et-supprime-la-légende"><i class="fa fa-check"></i><b>18.1</b> Ajoute la treemap et supprime la légende</a></li>
+<li class="chapter" data-level="18.2" data-path="dataviz-1.html"><a href="dataviz-1.html#ui.r-6"><i class="fa fa-check"></i><b>18.2</b> <code>ui.R</code></a></li>
+<li class="chapter" data-level="18.3" data-path="dataviz-1.html"><a href="dataviz-1.html#server.r-11"><i class="fa fa-check"></i><b>18.3</b> <code>server.R</code></a></li>
+</ul></li>
+<li class="chapter" data-level="19" data-path="refactoring-2.html"><a href="refactoring-2.html"><i class="fa fa-check"></i><b>19</b> Refactoring</a>
+<ul>
+<li class="chapter" data-level="19.1" data-path="refactoring-2.html"><a href="refactoring-2.html#sépare-en-ui.r-server.r-et-global.r"><i class="fa fa-check"></i><b>19.1</b> Sépare en <code>ui.R</code>, <code>server.R</code> et <code>global.R</code></a></li>
+<li class="chapter" data-level="19.2" data-path="refactoring-2.html"><a href="refactoring-2.html#au-sujet-de-global.r"><i class="fa fa-check"></i><b>19.2</b> Au sujet de <code>global.R</code></a></li>
+<li class="chapter" data-level="19.3" data-path="refactoring-2.html"><a href="refactoring-2.html#server.r-12"><i class="fa fa-check"></i><b>19.3</b> <code>server.R</code></a></li>
+<li class="chapter" data-level="19.4" data-path="refactoring-2.html"><a href="refactoring-2.html#global.r"><i class="fa fa-check"></i><b>19.4</b> <code>global.R</code></a></li>
+<li class="chapter" data-level="19.5" data-path="refactoring-2.html"><a href="refactoring-2.html#ajoute-un-fichier-helpers.r"><i class="fa fa-check"></i><b>19.5</b> Ajoute un fichier <code>helpers.R</code></a></li>
+<li class="chapter" data-level="19.6" data-path="refactoring-2.html"><a href="refactoring-2.html#global.r-1"><i class="fa fa-check"></i><b>19.6</b> <code>global.R</code></a></li>
+</ul></li>
+<li class="chapter" data-level="20" data-path="contexte-2.html"><a href="contexte-2.html"><i class="fa fa-check"></i><b>20</b> Contexte</a></li>
+<li class="chapter" data-level="21" data-path="data-centric.html"><a href="data-centric.html"><i class="fa fa-check"></i><b>21</b> Data centric</a></li>
+<li class="chapter" data-level="22" data-path="les-étapes-de-développement-dune-dataviz.html"><a href="les-étapes-de-développement-dune-dataviz.html"><i class="fa fa-check"></i><b>22</b> Les étapes de développement d’une dataviz</a>
+<ul>
+<li class="chapter" data-level="22.1" data-path="les-étapes-de-développement-dune-dataviz.html"><a href="les-étapes-de-développement-dune-dataviz.html#collecte"><i class="fa fa-check"></i><b>22.1</b> Collecte</a></li>
+<li class="chapter" data-level="22.2" data-path="les-étapes-de-développement-dune-dataviz.html"><a href="les-étapes-de-développement-dune-dataviz.html#qualité"><i class="fa fa-check"></i><b>22.2</b> Qualité</a></li>
+<li class="chapter" data-level="22.3" data-path="les-étapes-de-développement-dune-dataviz.html"><a href="les-étapes-de-développement-dune-dataviz.html#sémiologie"><i class="fa fa-check"></i><b>22.3</b> Sémiologie</a></li>
+<li class="chapter" data-level="22.4" data-path="les-étapes-de-développement-dune-dataviz.html"><a href="les-étapes-de-développement-dune-dataviz.html#expérience-utilisateur"><i class="fa fa-check"></i><b>22.4</b> Expérience utilisateur</a></li>
+<li class="chapter" data-level="22.5" data-path="les-étapes-de-développement-dune-dataviz.html"><a href="les-étapes-de-développement-dune-dataviz.html#fonctionnalité"><i class="fa fa-check"></i><b>22.5</b> Fonctionnalité</a></li>
+<li class="chapter" data-level="22.6" data-path="les-étapes-de-développement-dune-dataviz.html"><a href="les-étapes-de-développement-dune-dataviz.html#esthétique"><i class="fa fa-check"></i><b>22.6</b> Esthétique</a></li>
+<li class="chapter" data-level="22.7" data-path="les-étapes-de-développement-dune-dataviz.html"><a href="les-étapes-de-développement-dune-dataviz.html#refactoring-3"><i class="fa fa-check"></i><b>22.7</b> Refactoring</a></li>
+</ul></li>
+<li class="chapter" data-level="23" data-path="dimensions-dune-dataviz-1.html"><a href="dimensions-dune-dataviz-1.html"><i class="fa fa-check"></i><b>23</b> Dimensions d’une dataviz</a></li>
+<li class="divider"></li>
+<li><a href="https://mtes-mct.github.io/parcours-r/">Liste des formations R</a></li>
+<li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
+
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Développement d’une application Shiny sur l’artificialisation</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="reactive-1" class="section level1" number="14">
+<h1><span class="header-section-number">Chapitre 14</span> <code>reactive</code></h1>
+<div id="rend-codeinsee-reactive" class="section level2" number="14.1">
+<h2><span class="header-section-number">14.1</span> Rend codeInsee reactive</h2>
+<p>Le code INSEE est récupéré dynamiquement après un clic sur la carte.</p>
+<p>On rend le code INSEE reactive car il sera utilisé à plusieurs endroits : <a href="https://github.com/datagistips/shiny-artif-app/commit/1edc95aebfe35df74ca77370b78dc1d0402157a6#diff-ee89f65a0b4e0dccabce1672d6d689b4e2b6ca51ea1e746bdda1eca94aaa6e0fR252">ici</a> ou encore <a href="https://github.com/datagistips/shiny-artif-app/commit/1edc95aebfe35df74ca77370b78dc1d0402157a6#diff-ee89f65a0b4e0dccabce1672d6d689b4e2b6ca51ea1e746bdda1eca94aaa6e0fR276">là</a></p>
+<p>► <a href="https://github.com/datagistips/shiny-artif-app/commit/4ac477bd273eaf5db7b0511764c9555182ef423e">Voir cette version</a> (4ac477bd273eaf5db7b0511764c9555182ef423e)</p>
+</div>
+<div id="ajoute-le-reactive" class="section level2" number="14.2">
+<h2><span class="header-section-number">14.2</span> Ajoute le reactive</h2>
+<p>On peut créer des reactive en cascade, comme ici, pour <code>fComm()</code> qui s’appuie sur <code>codeInsee()</code></p>
+</div>
+<div id="server.r-10" class="section level2" number="14.3">
+<h2><span class="header-section-number">14.3</span> <code>server.R</code></h2>
+<div class="sourceCode" id="cb92"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb92-1"><a href="reactive-1.html#cb92-1" aria-hidden="true" tabindex="-1"></a>fComm <span class="ot">&lt;-</span> <span class="fu">reactive</span>({</span>
+<span id="cb92-2"><a href="reactive-1.html#cb92-2" aria-hidden="true" tabindex="-1"></a>        fComm <span class="ot">&lt;-</span> flux <span class="sc">%&gt;%</span> <span class="fu">filter</span>(idcom <span class="sc">==</span> input<span class="sc">$</span>communes)</span>
+<span id="cb92-3"><a href="reactive-1.html#cb92-3" aria-hidden="true" tabindex="-1"></a>        fComm <span class="ot">&lt;-</span> flux <span class="sc">%&gt;%</span> <span class="fu">filter</span>(idcom <span class="sc">==</span> <span class="fu">codeInsee</span>())</span>
+<span id="cb92-4"><a href="reactive-1.html#cb92-4" aria-hidden="true" tabindex="-1"></a>        <span class="fu">return</span>(fComm)</span>
+<span id="cb92-5"><a href="reactive-1.html#cb92-5" aria-hidden="true" tabindex="-1"></a>    })</span></code></pre></div>
+<p>Pour le streamgraph, on utilise <code>codeInsee()</code> comme ceci :</p>
+<div class="sourceCode" id="cb93"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb93-1"><a href="reactive-1.html#cb93-1" aria-hidden="true" tabindex="-1"></a>myStream <span class="ot">&lt;-</span> flux <span class="sc">%&gt;%</span> <span class="fu">makeStream</span>(<span class="fu">codeInsee</span>())</span></code></pre></div>
+<p>► <a href="https://github.com/datagistips/shiny-artif-app/commit/f3d3ffb842c07aaa67a9e4c48b922e8b4fa858dc#diff-ee89f65a0b4e0dccabce1672d6d689b4e2b6ca51ea1e746bdda1eca94aaa6e0fR174">Voir la ligne de code</a></p>
+<p>► <a href="https://github.com/datagistips/shiny-artif-app/commit/f3d3ffb842c07aaa67a9e4c48b922e8b4fa858dc">Voir cette version</a> (f3d3ffb842c07aaa67a9e4c48b922e8b4fa858dc)</p>
+</div>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="carto.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="refactoring.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": {
+"github": false,
+"facebook": true,
+"twitter": true,
+"linkedin": false,
+"weibo": false,
+"instapaper": false,
+"vk": false,
+"whatsapp": false,
+"all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+},
+"fontsettings": {
+"theme": "white",
+"family": "sans",
+"size": 2
+},
+"edit": {
+"link": null,
+"text": null
+},
+"history": {
+"link": null,
+"text": null
+},
+"view": {
+"link": null,
+"text": null
+},
+"download": ["support.pdf", "support.epub"],
+"search": {
+"engine": "fuse",
+"options": null
+},
+"toc": {
+"collapse": "section"
+}
+});
+});
+</script>
+
+</body>
+
+</html>

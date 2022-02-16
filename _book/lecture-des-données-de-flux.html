@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>Chapitre 2 Lecture des données de flux | Développement d’une application Shiny sur l’artificialisation</title>
+  <meta name="description" content="Développement pas à pas d’une application Shiny permettant de voir l’évolution de l’artificialisation en région Sud" />
+  <meta name="generator" content="bookdown 0.24 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="Chapitre 2 Lecture des données de flux | Développement d’une application Shiny sur l’artificialisation" />
+  <meta property="og:type" content="book" />
+  
+  
+  <meta property="og:description" content="Développement pas à pas d’une application Shiny permettant de voir l’évolution de l’artificialisation en région Sud" />
+  <meta name="github-repo" content="rstudio/bookdown-demo" />
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Chapitre 2 Lecture des données de flux | Développement d’une application Shiny sur l’artificialisation" />
+  
+  <meta name="twitter:description" content="Développement pas à pas d’une application Shiny permettant de voir l’évolution de l’artificialisation en région Sud" />
+  
+
+<meta name="author" content="Mathieu Rajerison" />
+
+
+<meta name="date" content="2022-02-16" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="quelques-datavisualisations.html"/>
+<link rel="next" href="traitement-de-la-donnée.html"/>
+<script src="libs/header-attrs-2.9/header-attrs.js"></script>
+<script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+<link href="libs/anchor-sections-1.0.1/anchor-sections.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.0.1/anchor-sections.js"></script>
+<script src="libs/htmlwidgets-1.5.3/htmlwidgets.js"></script>
+<script src="libs/d3-3.5.3/d3.min.js"></script>
+<link href="libs/colorbrewer-1/colorbrewer.css" rel="stylesheet" />
+<script src="libs/colorbrewer-1/colorbrewer.js"></script>
+<link href="libs/streamgraph-1/streamgraph.css" rel="stylesheet" />
+<script src="libs/streamgraph-binding-0.9.0/streamgraph.js"></script>
+
+
+<style type="text/css">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li><p style="text-align:center;"><img src="https://mtes-mct.github.io/parcours-r/assets/images/logo_marianne_fond_blanc.png" style="width:100px;"/></p></li>
+<li><a href="./index.html">Développement d'une application Shiny sur l'artificialisation</a></li>
+
+<li class="divider"></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i>Introduction</a>
+<ul>
+<li class="chapter" data-level="0.1" data-path="index.html"><a href="index.html#le-parcours-de-formation"><i class="fa fa-check"></i><b>0.1</b> Le parcours de formation</a></li>
+<li class="chapter" data-level="0.2" data-path="index.html"><a href="index.html#objectifs-de-ce-module"><i class="fa fa-check"></i><b>0.2</b> Objectifs de ce module</a></li>
+</ul></li>
+<li class="chapter" data-level="1" data-path="quelques-datavisualisations.html"><a href="quelques-datavisualisations.html"><i class="fa fa-check"></i><b>1</b> Quelques datavisualisations</a>
+<ul>
+<li class="chapter" data-level="1.1" data-path="quelques-datavisualisations.html"><a href="quelques-datavisualisations.html#la-carte-du-choléra-de-john-snow"><i class="fa fa-check"></i><b>1.1</b> La carte du choléra de John Snow</a>
+<ul>
+<li class="chapter" data-level="1.1.1" data-path="quelques-datavisualisations.html"><a href="quelques-datavisualisations.html#charles-joseph-minard"><i class="fa fa-check"></i><b>1.1.1</b> Charles Joseph Minard</a></li>
+</ul></li>
+<li class="chapter" data-level="1.2" data-path="quelques-datavisualisations.html"><a href="quelques-datavisualisations.html#la-correspondance-de-stefanie-posavec-et-giorgia-lupi"><i class="fa fa-check"></i><b>1.2</b> La correspondance de Stefanie Posavec et Giorgia Lupi</a></li>
+<li class="chapter" data-level="1.3" data-path="quelques-datavisualisations.html"><a href="quelques-datavisualisations.html#le-suivi-de-lépidémie-en-ligne-de-guillaume-rozier"><i class="fa fa-check"></i><b>1.3</b> Le suivi de l’épidémie en ligne de Guillaume Rozier</a></li>
+<li class="chapter" data-level="1.4" data-path="quelques-datavisualisations.html"><a href="quelques-datavisualisations.html#le-data-driven-dj-de-brian-foo"><i class="fa fa-check"></i><b>1.4</b> Le Data-Driven DJ de Brian Foo</a></li>
+<li class="chapter" data-level="1.5" data-path="quelques-datavisualisations.html"><a href="quelques-datavisualisations.html#quelques-théories-et-théoriciens"><i class="fa fa-check"></i><b>1.5</b> Quelques théories et théoriciens</a>
+<ul>
+<li class="chapter" data-level="1.5.1" data-path="quelques-datavisualisations.html"><a href="quelques-datavisualisations.html#jacques-bertin"><i class="fa fa-check"></i><b>1.5.1</b> Jacques Bertin</a></li>
+</ul></li>
+<li class="chapter" data-level="1.6" data-path="quelques-datavisualisations.html"><a href="quelques-datavisualisations.html#leland-wilkinson"><i class="fa fa-check"></i><b>1.6</b> Leland Wilkinson</a></li>
+<li class="chapter" data-level="1.7" data-path="quelques-datavisualisations.html"><a href="quelques-datavisualisations.html#edward-tufte"><i class="fa fa-check"></i><b>1.7</b> Edward Tufte</a></li>
+<li class="chapter" data-level="1.8" data-path="quelques-datavisualisations.html"><a href="quelques-datavisualisations.html#des-outils-pour-visualiser"><i class="fa fa-check"></i><b>1.8</b> Des outils pour visualiser</a>
+<ul>
+<li class="chapter" data-level="1.8.1" data-path="quelques-datavisualisations.html"><a href="quelques-datavisualisations.html#outils-bureau"><i class="fa fa-check"></i><b>1.8.1</b> Outils bureau</a></li>
+<li class="chapter" data-level="1.8.2" data-path="quelques-datavisualisations.html"><a href="quelques-datavisualisations.html#python"><i class="fa fa-check"></i><b>1.8.2</b> Python</a></li>
+<li class="chapter" data-level="1.8.3" data-path="quelques-datavisualisations.html"><a href="quelques-datavisualisations.html#r"><i class="fa fa-check"></i><b>1.8.3</b> R</a></li>
+<li class="chapter" data-level="1.8.4" data-path="quelques-datavisualisations.html"><a href="quelques-datavisualisations.html#javascript"><i class="fa fa-check"></i><b>1.8.4</b> Javascript</a></li>
+</ul></li>
+<li class="chapter" data-level="1.9" data-path="quelques-datavisualisations.html"><a href="quelques-datavisualisations.html#des-dataviz-cerema-faites-sous-shiny"><i class="fa fa-check"></i><b>1.9</b> Des dataviz Cerema faites sous Shiny</a>
+<ul>
+<li class="chapter" data-level="1.9.1" data-path="quelques-datavisualisations.html"><a href="quelques-datavisualisations.html#trafic-covid"><i class="fa fa-check"></i><b>1.9.1</b> trafic covid</a></li>
+<li class="chapter" data-level="1.9.2" data-path="quelques-datavisualisations.html"><a href="quelques-datavisualisations.html#cartofriches"><i class="fa fa-check"></i><b>1.9.2</b> Cartofriches</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="2" data-path="lecture-des-données-de-flux.html"><a href="lecture-des-données-de-flux.html"><i class="fa fa-check"></i><b>2</b> Lecture des données de flux</a>
+<ul>
+<li class="chapter" data-level="2.1" data-path="lecture-des-données-de-flux.html"><a href="lecture-des-données-de-flux.html#téléchargement-de-la-donnée"><i class="fa fa-check"></i><b>2.1</b> Téléchargement de la donnée</a></li>
+<li class="chapter" data-level="2.2" data-path="lecture-des-données-de-flux.html"><a href="lecture-des-données-de-flux.html#chargement-des-librairies"><i class="fa fa-check"></i><b>2.2</b> Chargement des librairies</a></li>
+<li class="chapter" data-level="2.3" data-path="lecture-des-données-de-flux.html"><a href="lecture-des-données-de-flux.html#lecture-de-la-donnée"><i class="fa fa-check"></i><b>2.3</b> Lecture de la donnée</a></li>
+<li class="chapter" data-level="2.4" data-path="lecture-des-données-de-flux.html"><a href="lecture-des-données-de-flux.html#contrôle"><i class="fa fa-check"></i><b>2.4</b> Contrôle</a></li>
+<li class="chapter" data-level="2.5" data-path="lecture-des-données-de-flux.html"><a href="lecture-des-données-de-flux.html#relecture-du-fichier"><i class="fa fa-check"></i><b>2.5</b> Relecture du fichier</a></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="traitement-de-la-donnée.html"><a href="traitement-de-la-donnée.html"><i class="fa fa-check"></i><b>3</b> Traitement de la donnée</a>
+<ul>
+<li class="chapter" data-level="3.1" data-path="traitement-de-la-donnée.html"><a href="traitement-de-la-donnée.html#lecture-des-données"><i class="fa fa-check"></i><b>3.1</b> Lecture des données</a></li>
+<li class="chapter" data-level="3.2" data-path="traitement-de-la-donnée.html"><a href="traitement-de-la-donnée.html#sélection-des-colonnes"><i class="fa fa-check"></i><b>3.2</b> Sélection des colonnes</a></li>
+<li class="chapter" data-level="3.3" data-path="traitement-de-la-donnée.html"><a href="traitement-de-la-donnée.html#transformation-du-format-wide-vers-long"><i class="fa fa-check"></i><b>3.3</b> Transformation du format wide vers long</a>
+<ul>
+<li class="chapter" data-level="3.3.1" data-path="traitement-de-la-donnée.html"><a href="traitement-de-la-donnée.html#wide"><i class="fa fa-check"></i><b>3.3.1</b> Wide</a></li>
+<li class="chapter" data-level="3.3.2" data-path="traitement-de-la-donnée.html"><a href="traitement-de-la-donnée.html#long"><i class="fa fa-check"></i><b>3.3.2</b> Long</a></li>
+<li class="chapter" data-level="3.3.3" data-path="traitement-de-la-donnée.html"><a href="traitement-de-la-donnée.html#transformation-au-format-long-avec-gather"><i class="fa fa-check"></i><b>3.3.3</b> Transformation au format <em>long</em> avec <code>gather</code></a></li>
+</ul></li>
+<li class="chapter" data-level="3.4" data-path="traitement-de-la-donnée.html"><a href="traitement-de-la-donnée.html#année-et-destination-du-flux"><i class="fa fa-check"></i><b>3.4</b> Année et destination du flux</a></li>
+<li class="chapter" data-level="3.5" data-path="traitement-de-la-donnée.html"><a href="traitement-de-la-donnée.html#retraitement"><i class="fa fa-check"></i><b>3.5</b> Retraitement</a></li>
+<li class="chapter" data-level="3.6" data-path="traitement-de-la-donnée.html"><a href="traitement-de-la-donnée.html#fonction-getstatsflux"><i class="fa fa-check"></i><b>3.6</b> Fonction <code>getStatsFlux</code></a></li>
+<li class="chapter" data-level="3.7" data-path="traitement-de-la-donnée.html"><a href="traitement-de-la-donnée.html#data-engineering"><i class="fa fa-check"></i><b>3.7</b> Data Engineering</a></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="palette-de-couleurs.html"><a href="palette-de-couleurs.html"><i class="fa fa-check"></i><b>4</b> Palette de couleurs</a>
+<ul>
+<li class="chapter" data-level="4.1" data-path="palette-de-couleurs.html"><a href="palette-de-couleurs.html#lecture-des-données-avec-transformation"><i class="fa fa-check"></i><b>4.1</b> Lecture des données avec transformation</a></li>
+<li class="chapter" data-level="4.2" data-path="palette-de-couleurs.html"><a href="palette-de-couleurs.html#premier-graphique"><i class="fa fa-check"></i><b>4.2</b> Premier graphique</a></li>
+<li class="chapter" data-level="4.3" data-path="palette-de-couleurs.html"><a href="palette-de-couleurs.html#quelques-améliorations"><i class="fa fa-check"></i><b>4.3</b> Quelques améliorations</a></li>
+<li class="chapter" data-level="4.4" data-path="palette-de-couleurs.html"><a href="palette-de-couleurs.html#couleurs-hcl-hue-chroma-luminance"><i class="fa fa-check"></i><b>4.4</b> Couleurs HCL (Hue Chroma Luminance)</a>
+<ul>
+<li class="chapter" data-level="4.4.1" data-path="palette-de-couleurs.html"><a href="palette-de-couleurs.html#a-propos"><i class="fa fa-check"></i><b>4.4.1</b> A propos</a></li>
+<li class="chapter" data-level="4.4.2" data-path="palette-de-couleurs.html"><a href="palette-de-couleurs.html#nos-couleurs"><i class="fa fa-check"></i><b>4.4.2</b> Nos couleurs</a></li>
+<li class="chapter" data-level="4.4.3" data-path="palette-de-couleurs.html"><a href="palette-de-couleurs.html#assistants"><i class="fa fa-check"></i><b>4.4.3</b> Assistants</a></li>
+<li class="chapter" data-level="4.4.4" data-path="palette-de-couleurs.html"><a href="palette-de-couleurs.html#utilisation-dans-notre-graphique"><i class="fa fa-check"></i><b>4.4.4</b> Utilisation dans notre graphique</a></li>
+</ul></li>
+<li class="chapter" data-level="4.5" data-path="palette-de-couleurs.html"><a href="palette-de-couleurs.html#export-de-la-palette"><i class="fa fa-check"></i><b>4.5</b> Export de la palette</a></li>
+<li class="chapter" data-level="4.6" data-path="palette-de-couleurs.html"><a href="palette-de-couleurs.html#une-couleur-plus-punchy"><i class="fa fa-check"></i><b>4.6</b> Une couleur plus “punchy”</a></li>
+<li class="chapter" data-level="4.7" data-path="palette-de-couleurs.html"><a href="palette-de-couleurs.html#couleurs-cerema"><i class="fa fa-check"></i><b>4.7</b> Couleurs Cerema</a></li>
+</ul></li>
+<li class="chapter" data-level="5" data-path="streamgraph.html"><a href="streamgraph.html"><i class="fa fa-check"></i><b>5</b> Streamgraph</a>
+<ul>
+<li class="chapter" data-level="5.1" data-path="streamgraph.html"><a href="streamgraph.html#lecture-des-données-1"><i class="fa fa-check"></i><b>5.1</b> Lecture des données</a></li>
+<li class="chapter" data-level="5.2" data-path="streamgraph.html"><a href="streamgraph.html#installation-de-la-librairie-streamgraph"><i class="fa fa-check"></i><b>5.2</b> Installation de la librairie <code>streamgraph</code></a></li>
+<li class="chapter" data-level="5.3" data-path="streamgraph.html"><a href="streamgraph.html#streamgraph-1"><i class="fa fa-check"></i><b>5.3</b> Streamgraph</a></li>
+<li class="chapter" data-level="5.4" data-path="streamgraph.html"><a href="streamgraph.html#fonction-makestream"><i class="fa fa-check"></i><b>5.4</b> Fonction <code>makeStream</code></a></li>
+<li class="chapter" data-level="5.5" data-path="streamgraph.html"><a href="streamgraph.html#dimensions-dune-dataviz"><i class="fa fa-check"></i><b>5.5</b> Dimensions d’une dataviz</a></li>
+</ul></li>
+<li class="chapter" data-level="6" data-path="spatial.html"><a href="spatial.html"><i class="fa fa-check"></i><b>6</b> Spatial</a>
+<ul>
+<li class="chapter" data-level="6.1" data-path="spatial.html"><a href="spatial.html#librairie-sf"><i class="fa fa-check"></i><b>6.1</b> Librairie sf</a></li>
+<li class="chapter" data-level="6.2" data-path="spatial.html"><a href="spatial.html#contours-administratifs"><i class="fa fa-check"></i><b>6.2</b> Contours administratifs</a></li>
+<li class="chapter" data-level="6.3" data-path="spatial.html"><a href="spatial.html#export"><i class="fa fa-check"></i><b>6.3</b> Export</a></li>
+<li class="chapter" data-level="6.4" data-path="spatial.html"><a href="spatial.html#coordonnées-au-clic"><i class="fa fa-check"></i><b>6.4</b> Coordonnées au clic</a></li>
+<li class="chapter" data-level="6.5" data-path="spatial.html"><a href="spatial.html#point"><i class="fa fa-check"></i><b>6.5</b> Point</a></li>
+<li class="chapter" data-level="6.6" data-path="spatial.html"><a href="spatial.html#commune-localisée-au-clic"><i class="fa fa-check"></i><b>6.6</b> Commune localisée au clic</a></li>
+<li class="chapter" data-level="6.7" data-path="spatial.html"><a href="spatial.html#fonction-getcommcenter"><i class="fa fa-check"></i><b>6.7</b> Fonction <code>getCommCenter</code></a></li>
+</ul></li>
+<li class="chapter" data-level="7" data-path="appli-shiny.html"><a href="appli-shiny.html"><i class="fa fa-check"></i><b>7</b> Appli Shiny</a>
+<ul>
+<li class="chapter" data-level="7.1" data-path="appli-shiny.html"><a href="appli-shiny.html#préambule"><i class="fa fa-check"></i><b>7.1</b> Préambule</a>
+<ul>
+<li class="chapter" data-level="7.1.1" data-path="appli-shiny.html"><a href="appli-shiny.html#template-de-base"><i class="fa fa-check"></i><b>7.1.1</b> Template de base</a></li>
+<li class="chapter" data-level="7.1.2" data-path="appli-shiny.html"><a href="appli-shiny.html#poser-les-bases"><i class="fa fa-check"></i><b>7.1.2</b> Poser les bases</a></li>
+<li class="chapter" data-level="7.1.3" data-path="appli-shiny.html"><a href="appli-shiny.html#lecture-des-données-et-liste-déroulante-des-communes"><i class="fa fa-check"></i><b>7.1.3</b> Lecture des données et liste déroulante des communes</a></li>
+<li class="chapter" data-level="7.1.4" data-path="appli-shiny.html"><a href="appli-shiny.html#affiche-un-tableau-des-résultats"><i class="fa fa-check"></i><b>7.1.4</b> Affiche un tableau des résultats</a></li>
+</ul></li>
+<li class="chapter" data-level="7.2" data-path="appli-shiny.html"><a href="appli-shiny.html#dataviz"><i class="fa fa-check"></i><b>7.2</b> Dataviz</a>
+<ul>
+<li class="chapter" data-level="7.2.1" data-path="appli-shiny.html"><a href="appli-shiny.html#ajoute-le-stream"><i class="fa fa-check"></i><b>7.2.1</b> Ajoute le stream</a></li>
+</ul></li>
+<li class="chapter" data-level="7.3" data-path="appli-shiny.html"><a href="appli-shiny.html#contexte"><i class="fa fa-check"></i><b>7.3</b> Contexte</a>
+<ul>
+<li class="chapter" data-level="7.3.1" data-path="appli-shiny.html"><a href="appli-shiny.html#ajoute-les-infos-communales"><i class="fa fa-check"></i><b>7.3.1</b> Ajoute les infos communales</a></li>
+<li class="chapter" data-level="7.3.2" data-path="appli-shiny.html"><a href="appli-shiny.html#ajoute-la-légende"><i class="fa fa-check"></i><b>7.3.2</b> Ajoute la légende</a></li>
+</ul></li>
+<li class="chapter" data-level="7.4" data-path="appli-shiny.html"><a href="appli-shiny.html#charte"><i class="fa fa-check"></i><b>7.4</b> Charte</a>
+<ul>
+<li class="chapter" data-level="7.4.1" data-path="appli-shiny.html"><a href="appli-shiny.html#titre-avec-couleurs-cerema"><i class="fa fa-check"></i><b>7.4.1</b> Titre avec couleurs cerema</a></li>
+</ul></li>
+<li class="chapter" data-level="7.5" data-path="appli-shiny.html"><a href="appli-shiny.html#contexte-1"><i class="fa fa-check"></i><b>7.5</b> Contexte</a>
+<ul>
+<li class="chapter" data-level="7.5.1" data-path="appli-shiny.html"><a href="appli-shiny.html#ajoute-la-surface-artificialisée-totale"><i class="fa fa-check"></i><b>7.5.1</b> Ajoute la surface artificialisée totale</a></li>
+</ul></li>
+<li class="chapter" data-level="7.6" data-path="appli-shiny.html"><a href="appli-shiny.html#reactive"><i class="fa fa-check"></i><b>7.6</b> <code>reactive</code></a>
+<ul>
+<li class="chapter" data-level="7.6.1" data-path="appli-shiny.html"><a href="appli-shiny.html#ajout-de-reactive-fcomm"><i class="fa fa-check"></i><b>7.6.1</b> Ajout de reactive <code>fComm</code></a></li>
+</ul></li>
+<li class="chapter" data-level="7.7" data-path="appli-shiny.html"><a href="appli-shiny.html#carto"><i class="fa fa-check"></i><b>7.7</b> Carto</a>
+<ul>
+<li class="chapter" data-level="7.7.1" data-path="appli-shiny.html"><a href="appli-shiny.html#ajoute-la-carte-leaflet"><i class="fa fa-check"></i><b>7.7.1</b> Ajoute la carte leaflet</a></li>
+<li class="chapter" data-level="7.7.2" data-path="appli-shiny.html"><a href="appli-shiny.html#centre-la-carte-sur-paca"><i class="fa fa-check"></i><b>7.7.2</b> Centre la carte sur PACA</a></li>
+<li class="chapter" data-level="7.7.3" data-path="appli-shiny.html"><a href="appli-shiny.html#ajoute-les-fonds-de-carte"><i class="fa fa-check"></i><b>7.7.3</b> Ajoute les fonds de carte</a></li>
+<li class="chapter" data-level="7.7.4" data-path="appli-shiny.html"><a href="appli-shiny.html#coordonnées-au-clic-1"><i class="fa fa-check"></i><b>7.7.4</b> Coordonnées au clic</a></li>
+</ul></li>
+<li class="chapter" data-level="7.8" data-path="appli-shiny.html"><a href="appli-shiny.html#reactive-1"><i class="fa fa-check"></i><b>7.8</b> <code>reactive</code></a>
+<ul>
+<li class="chapter" data-level="7.8.1" data-path="appli-shiny.html"><a href="appli-shiny.html#rend-codeinsee-reactive"><i class="fa fa-check"></i><b>7.8.1</b> Rend codeInsee reactive</a></li>
+<li class="chapter" data-level="7.8.2" data-path="appli-shiny.html"><a href="appli-shiny.html#ajoute-le-reactive"><i class="fa fa-check"></i><b>7.8.2</b> Ajoute le reactive</a></li>
+</ul></li>
+<li class="chapter" data-level="7.9" data-path="appli-shiny.html"><a href="appli-shiny.html#refactoring"><i class="fa fa-check"></i><b>7.9</b> Refactoring</a>
+<ul>
+<li class="chapter" data-level="7.9.1" data-path="appli-shiny.html"><a href="appli-shiny.html#fix-ajoute-req"><i class="fa fa-check"></i><b>7.9.1</b> Fix : ajoute req</a></li>
+</ul></li>
+<li class="chapter" data-level="7.10" data-path="appli-shiny.html"><a href="appli-shiny.html#carto-1"><i class="fa fa-check"></i><b>7.10</b> Carto</a>
+<ul>
+<li class="chapter" data-level="7.10.1" data-path="appli-shiny.html"><a href="appli-shiny.html#ajoute-un-marqueur"><i class="fa fa-check"></i><b>7.10.1</b> Ajoute un marqueur</a></li>
+<li class="chapter" data-level="7.10.2" data-path="appli-shiny.html"><a href="appli-shiny.html#ajoute-le-contour-de-la-commune"><i class="fa fa-check"></i><b>7.10.2</b> Ajoute le contour de la commune</a></li>
+<li class="chapter" data-level="7.10.3" data-path="appli-shiny.html"><a href="appli-shiny.html#va-vers-la-commune"><i class="fa fa-check"></i><b>7.10.3</b> Va vers la commune</a></li>
+<li class="chapter" data-level="7.10.4" data-path="appli-shiny.html"><a href="appli-shiny.html#la-liste-déroulante-permet-daller-vers-une-commune"><i class="fa fa-check"></i><b>7.10.4</b> La liste déroulante permet d’aller vers une commune</a></li>
+<li class="chapter" data-level="7.10.5" data-path="appli-shiny.html"><a href="appli-shiny.html#ajoute-lélément-vide-à-la-liste-des-communes"><i class="fa fa-check"></i><b>7.10.5</b> Ajoute l’élément vide à la liste des communes</a></li>
+</ul></li>
+<li class="chapter" data-level="7.11" data-path="appli-shiny.html"><a href="appli-shiny.html#refactoring-1"><i class="fa fa-check"></i><b>7.11</b> Refactoring</a>
+<ul>
+<li class="chapter" data-level="7.11.1" data-path="appli-shiny.html"><a href="appli-shiny.html#précise-quil-faut-cliquer-sur-la-carte-pour-afficher-les-stats"><i class="fa fa-check"></i><b>7.11.1</b> Précise qu’il faut cliquer sur la carte pour afficher les stats</a></li>
+</ul></li>
+<li class="chapter" data-level="7.12" data-path="appli-shiny.html"><a href="appli-shiny.html#dataviz-1"><i class="fa fa-check"></i><b>7.12</b> Dataviz</a>
+<ul>
+<li class="chapter" data-level="7.12.1" data-path="appli-shiny.html"><a href="appli-shiny.html#ajoute-la-treemap-et-supprime-la-légende"><i class="fa fa-check"></i><b>7.12.1</b> Ajoute la treemap et supprime la légende</a></li>
+</ul></li>
+<li class="chapter" data-level="7.13" data-path="appli-shiny.html"><a href="appli-shiny.html#refactoring-2"><i class="fa fa-check"></i><b>7.13</b> Refactoring</a>
+<ul>
+<li class="chapter" data-level="7.13.1" data-path="appli-shiny.html"><a href="appli-shiny.html#sépare-en-ui.r-server.r-et-global.r"><i class="fa fa-check"></i><b>7.13.1</b> Sépare en <code>ui.R</code>, <code>server.R</code> et <code>global.R</code></a></li>
+<li class="chapter" data-level="7.13.2" data-path="appli-shiny.html"><a href="appli-shiny.html#au-sujet-de-global.r"><i class="fa fa-check"></i><b>7.13.2</b> Au sujet de <code>global.R</code></a></li>
+<li class="chapter" data-level="7.13.3" data-path="appli-shiny.html"><a href="appli-shiny.html#global.r"><i class="fa fa-check"></i><b>7.13.3</b> <code>global.R</code></a></li>
+<li class="chapter" data-level="7.13.4" data-path="appli-shiny.html"><a href="appli-shiny.html#ajoute-un-fichier-helpers.r"><i class="fa fa-check"></i><b>7.13.4</b> Ajoute un fichier <code>helpers.R</code></a></li>
+<li class="chapter" data-level="7.13.5" data-path="appli-shiny.html"><a href="appli-shiny.html#global.r-1"><i class="fa fa-check"></i><b>7.13.5</b> <code>global.R</code></a></li>
+</ul></li>
+<li class="chapter" data-level="7.14" data-path="appli-shiny.html"><a href="appli-shiny.html#contexte-2"><i class="fa fa-check"></i><b>7.14</b> Contexte</a></li>
+</ul></li>
+<li class="chapter" data-level="8" data-path="réflexions.html"><a href="réflexions.html"><i class="fa fa-check"></i><b>8</b> Réflexions</a>
+<ul>
+<li class="chapter" data-level="8.1" data-path="réflexions.html"><a href="réflexions.html#data-centric"><i class="fa fa-check"></i><b>8.1</b> Data centric</a></li>
+<li class="chapter" data-level="8.2" data-path="réflexions.html"><a href="réflexions.html#les-étapes-de-développement-dune-dataviz"><i class="fa fa-check"></i><b>8.2</b> Les étapes de développement d’une dataviz</a>
+<ul>
+<li class="chapter" data-level="8.2.1" data-path="réflexions.html"><a href="réflexions.html#collecte"><i class="fa fa-check"></i><b>8.2.1</b> Collecte</a></li>
+<li class="chapter" data-level="8.2.2" data-path="réflexions.html"><a href="réflexions.html#qualité"><i class="fa fa-check"></i><b>8.2.2</b> Qualité</a></li>
+<li class="chapter" data-level="8.2.3" data-path="réflexions.html"><a href="réflexions.html#sémiologie"><i class="fa fa-check"></i><b>8.2.3</b> Sémiologie</a></li>
+<li class="chapter" data-level="8.2.4" data-path="réflexions.html"><a href="réflexions.html#expérience-utilisateur"><i class="fa fa-check"></i><b>8.2.4</b> Expérience utilisateur</a></li>
+<li class="chapter" data-level="8.2.5" data-path="réflexions.html"><a href="réflexions.html#fonctionnalité"><i class="fa fa-check"></i><b>8.2.5</b> Fonctionnalité</a></li>
+<li class="chapter" data-level="8.2.6" data-path="réflexions.html"><a href="réflexions.html#esthétique"><i class="fa fa-check"></i><b>8.2.6</b> Esthétique</a></li>
+<li class="chapter" data-level="8.2.7" data-path="réflexions.html"><a href="réflexions.html#refactoring-3"><i class="fa fa-check"></i><b>8.2.7</b> Refactoring</a></li>
+</ul></li>
+<li class="chapter" data-level="8.3" data-path="réflexions.html"><a href="réflexions.html#dimensions-dune-dataviz-1"><i class="fa fa-check"></i><b>8.3</b> Dimensions d’une dataviz</a></li>
+</ul></li>
+<li class="divider"></li>
+<li><a href="https://mtes-mct.github.io/parcours-r/">Liste des formations R</a></li>
+<li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
+
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Développement d’une application Shiny sur l’artificialisation</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="lecture-des-données-de-flux" class="section level1" number="2">
+<h1><span class="header-section-number">Chapitre 2</span> Lecture des données de flux</h1>
+<p>Dans ces notebooks, nous nous intéresserons aux flux d’artificialisation vers différents postes : habitat, activité,… au fil des ans, sur la période 2009 à 2020.</p>
+<p>Ces différents notebooks visent à poser les bases d’une application Shiny d’exploration de ces données.</p>
+<div id="téléchargement-de-la-donnée" class="section level2" number="2.1">
+<h2><span class="header-section-number">2.1</span> Téléchargement de la donnée</h2>
+<p>Le fichier à télécharger s’appelle <code>obs_artif_conso_com_2009_2020_V2.csv</code> et se situe à l’adresse <a href="https://cerema.app.box.com/v/pnb-action7-indicateurs-ff/folder/149684581362">https://cerema.app.box.com/v/pnb-action7-indicateurs-ff/folder/149684581362</a></p>
+<p>On le télécharge dans le dossier <code>data</code> de notre répertoire de travail.</p>
+</div>
+<div id="chargement-des-librairies" class="section level2" number="2.2">
+<h2><span class="header-section-number">2.2</span> Chargement des librairies</h2>
+<p>Chargeons la fameuse librairie ‘couteau suisse’ <code>tidyverse</code>. Celle-ci contient des librairies essentielles telles que dplyr, magrittr (pour les pipes <code>%&gt;%</code>),…</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="lecture-des-données-de-flux.html#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span></code></pre></div>
+</div>
+<div id="lecture-de-la-donnée" class="section level2" number="2.3">
+<h2><span class="header-section-number">2.3</span> Lecture de la donnée</h2>
+<p>Lisons nos données :</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="lecture-des-données-de-flux.html#cb2-1" aria-hidden="true" tabindex="-1"></a>flux <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">&quot;data/obs_artif_conso_com_2009_2020_V2.csv&quot;</span>)</span>
+<span id="cb2-2"><a href="lecture-des-données-de-flux.html#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(flux)</span></code></pre></div>
+<pre><code>Rows: 34,938
+Columns: 85
+$ idcom       &lt;chr&gt; &quot;01001&quot;, &quot;01002&quot;, &quot;01004&quot;, &quot;01005&quot;, &quot;01006&quot;, &quot;01007&quot;, &quot;010~
+$ idcomtxt    &lt;chr&gt; &quot;L&#39;Abergement-Clémenciat&quot;, &quot;L&#39;Abergement-de-Varey&quot;, &quot;Ambér~
+$ idreg       &lt;chr&gt; &quot;84&quot;, &quot;84&quot;, &quot;84&quot;, &quot;84&quot;, &quot;84&quot;, &quot;84&quot;, &quot;84&quot;, &quot;84&quot;, &quot;84&quot;, &quot;84&quot;~
+$ idregtxt    &lt;chr&gt; &quot;Auvergne-Rhône-Alpes&quot;, &quot;Auvergne-Rhône-Alpes&quot;, &quot;Auvergne-~
+$ iddep       &lt;chr&gt; &quot;01&quot;, &quot;01&quot;, &quot;01&quot;, &quot;01&quot;, &quot;01&quot;, &quot;01&quot;, &quot;01&quot;, &quot;01&quot;, &quot;01&quot;, &quot;01&quot;~
+$ iddeptxt    &lt;chr&gt; &quot;Ain&quot;, &quot;Ain&quot;, &quot;Ain&quot;, &quot;Ain&quot;, &quot;Ain&quot;, &quot;Ain&quot;, &quot;Ain&quot;, &quot;Ain&quot;, &quot;A~
+$ epci20      &lt;dbl&gt; 200069193, 240100883, 240100883, 200042497, 200040350, 240~
+$ epci20txt   &lt;chr&gt; &quot;CC de la Dombes&quot;, &quot;CC de la Plaine de l&#39;Ain&quot;, &quot;CC de la P~
+$ aav2020     &lt;chr&gt; &quot;524&quot;, &quot;000&quot;, &quot;243&quot;, &quot;002&quot;, &quot;286&quot;, &quot;243&quot;, &quot;243&quot;, &quot;286&quot;, &quot;0~
+$ libaav2020  &lt;chr&gt; &quot;Châtillon-sur-Chalaronne&quot;, &quot;Commune hors attraction des v~
+$ cateaav2020 &lt;dbl&gt; 20, 30, 11, 20, 20, 20, 20, 20, 30, 20, 20, 20, 20, 20, 20~
+$ naf09art10  &lt;dbl&gt; 8324, 1139, 79035, 6205, 0, 19333, 1337, 676, 17093, 1893,~
+$ art09act10  &lt;dbl&gt; 0, 0, 48339, 0, 0, 1783, 0, 0, 0, 0, 0, 0, 4813, 0, 0, 0, ~
+$ art09hab10  &lt;dbl&gt; 8324, 1139, 29034, 6152, 0, 14707, 1337, 676, 10834, 1533,~
+$ art09mix10  &lt;dbl&gt; 0, 0, 1662, 53, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ~
+$ art09inc10  &lt;dbl&gt; 0, 0, 0, 0, 0, 2843, 0, 0, 6259, 360, 0, 0, 10, 250, 0, 2,~
+$ naf10art11  &lt;dbl&gt; 8324, 1140, 79035, 6205, 0, 19334, 1338, 676, 17094, 1894,~
+$ art10act11  &lt;dbl&gt; 0, 0, 48339, 0, 0, 1784, 0, 0, 0, 0, 0, 0, 4813, 0, 0, 0, ~
+$ art10hab11  &lt;dbl&gt; 8324, 1140, 29034, 6152, 0, 14708, 1338, 676, 10834, 1534,~
+$ art10mix11  &lt;dbl&gt; 0, 0, 1662, 53, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ~
+$ art10inc11  &lt;dbl&gt; 0, 0, 0, 0, 0, 2842, 0, 0, 6260, 360, 0, 0, 10, 249, 0, 2,~
+$ naf11art12  &lt;dbl&gt; 0, 4638, 30959, 9185, 98, 10161, 3045, 1088, 22509, 1208, ~
+$ art11act12  &lt;dbl&gt; 0, 0, 5957, 0, 0, 0, 1419, 0, 14380, 0, 0, 0, 21760, 640, ~
+$ art11hab12  &lt;dbl&gt; 0, 258, 12752, 9029, 98, 10161, 1500, 1088, 8129, 1208, 0,~
+$ art11mix12  &lt;dbl&gt; 0, 0, 0, 106, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 16605~
+$ art11inc12  &lt;dbl&gt; 0, 4380, 12250, 50, 0, 0, 126, 0, 0, 0, 0, 0, 0, 0, 0, 0, ~
+$ naf12art13  &lt;dbl&gt; 650, 977, 14426, 2799, 0, 4418, 1847, 1314, 7824, 3992, 40~
+$ art12act13  &lt;dbl&gt; 0, 0, 5200, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0~
+$ art12hab13  &lt;dbl&gt; 650, 977, 9226, 1975, 0, 4418, 1847, 1314, 7824, 3992, 161~
+$ art12mix13  &lt;dbl&gt; 0, 0, 0, 824, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 14~
+$ art12inc13  &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2402, 0, 0, 0, 0, 0, 0, 0, 0~
+$ naf13art14  &lt;dbl&gt; 8037, 0, 14873, 0, 0, 11208, 1218, 3418, 8014, 0, 0, 0, 14~
+$ art13act14  &lt;dbl&gt; 0, 0, 4410, 0, 0, 1014, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0~
+$ art13hab14  &lt;dbl&gt; 8037, 0, 10108, 0, 0, 10194, 1218, 3418, 8014, 0, 0, 0, 14~
+$ art13mix14  &lt;dbl&gt; 0, 0, 354, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,~
+$ art13inc14  &lt;dbl&gt; 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1500, 0, 1226~
+$ naf14art15  &lt;dbl&gt; 0, 975, 29188, 0, 0, 24511, 226, 3065, 0, 0, 7984, 0, 1109~
+$ art14act15  &lt;dbl&gt; 0, 0, 691, 0, 0, 0, 0, 0, 0, 0, 0, 0, 164, 0, 0, 0, 0, 0, ~
+$ art14hab15  &lt;dbl&gt; 0, 975, 28497, 0, 0, 24511, 226, 3065, 0, 0, 7598, 0, 1093~
+$ art14mix15  &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0~
+$ art14inc15  &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 386, 0, 0, 0, 0, 0, 0, 0, 0,~
+$ naf15art16  &lt;dbl&gt; 857, 1749, 94624, 886, 1450, 14000, 2862, 6847, 1317, 0, 1~
+$ art15act16  &lt;dbl&gt; 0, 0, 34171, 0, 0, 11601, 0, 0, 0, 0, 0, 0, 80043, 0, 0, 0~
+$ art15hab16  &lt;dbl&gt; 857, 1749, 60300, 0, 1450, 2399, 2862, 6847, 1317, 0, 1449~
+$ art15mix16  &lt;dbl&gt; 0, 0, 152, 886, 0, 0, 0, 0, 0, 0, 0, 0, 677, 0, 0, 0, 0, 0~
+$ art15inc16  &lt;dbl&gt; 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0~
+$ naf16art17  &lt;dbl&gt; 1718, 1205, 45103, 16323, 0, 27673, 8959, 0, 3363, 2090, 0~
+$ art16act17  &lt;dbl&gt; 0, 0, 1069, 0, 0, 13351, 0, 0, 0, 0, 0, 0, 1505, 0, 0, 0, ~
+$ art16hab17  &lt;dbl&gt; 1718, 1205, 44034, 13831, 0, 12816, 8959, 0, 3363, 2090, 0~
+$ art16mix17  &lt;dbl&gt; 0, 0, 0, 2492, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0~
+$ art16inc17  &lt;dbl&gt; 0, 0, 0, 0, 0, 1506, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0~
+$ naf17art18  &lt;dbl&gt; 3580, 0, 76493, 3729, 1000, 12508, 1338, 2265, 978, 1781, ~
+$ art17act18  &lt;dbl&gt; 0, 0, 36327, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ~
+$ art17hab18  &lt;dbl&gt; 3580, 0, 40166, 3729, 1000, 12508, 1338, 2265, 978, 1781, ~
+$ art17mix18  &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0~
+$ art17inc18  &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5647, 0, 0, 0, 0, 0, 0, 0, 0~
+$ naf18art19  &lt;dbl&gt; 2721, 1037, 87831, 0, 3959, 19203, 2550, 1000, 700, 0, 0, ~
+$ art18act19  &lt;dbl&gt; 0, 0, 34134, 0, 0, 5757, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ~
+$ art18hab19  &lt;dbl&gt; 2721, 600, 53272, 0, 3959, 13446, 2550, 1000, 700, 0, 0, 0~
+$ art18mix19  &lt;dbl&gt; 0, 0, 425, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,~
+$ art18inc19  &lt;dbl&gt; 0, 437, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,~
+$ naf19art20  &lt;dbl&gt; 0, 1740, 13093, 25621, 0, 22992, 9419, 2020, 1707, 0, 4830~
+$ art19act20  &lt;dbl&gt; 0, 0, 4907, 0, 0, 18782, 0, 0, 0, 0, 0, 0, 0, 0, 1850, 0, ~
+$ art19hab20  &lt;dbl&gt; 0, 1740, 8157, 25621, 0, 4210, 9419, 2020, 1707, 0, 4830, ~
+$ art19mix20  &lt;dbl&gt; 0, 0, 29, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ~
+$ art19inc20  &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0~
+$ nafart0920  &lt;dbl&gt; 34211, 14600, 564660, 70953, 6507, 185341, 34139, 22369, 8~
+$ artact0920  &lt;dbl&gt; 0, 0, 223544, 0, 0, 54072, 1419, 0, 14380, 0, 0, 0, 113098~
+$ arthab0920  &lt;dbl&gt; 34211, 9783, 324580, 66489, 6507, 124078, 32594, 22369, 53~
+$ artmix0920  &lt;dbl&gt; 0, 0, 4284, 4414, 0, 0, 0, 0, 0, 0, 0, 0, 677, 0, 0, 0, 0,~
+$ artinc0920  &lt;dbl&gt; 0, 4817, 12252, 50, 0, 7191, 126, 0, 12519, 720, 8435, 0, ~
+$ artcom0920  &lt;chr&gt; &quot;0.22&quot;, &quot;0.16&quot;, &quot;2.31&quot;, &quot;0.44&quot;, &quot;0.11&quot;, &quot;0.55&quot;, &quot;0.66&quot;, &quot;0~
+$ pop12       &lt;dbl&gt; 777, 235, 14233, 1642, 110, 2437, 739, 338, 1069, 385, 311~
+$ pop17       &lt;dbl&gt; 776, 248, 14035, 1689, 111, 2726, 752, 330, 1115, 376, 326~
+$ pop1217     &lt;dbl&gt; -1, 13, -198, 47, 1, 289, 13, -8, 46, -9, 15, -16, -73, 23~
+$ men12       &lt;dbl&gt; 303, 104, 6013, 614, 51, 979, 306, 140, 428, 148, 140, 68,~
+$ men17       &lt;dbl&gt; 315, 107, 6406, 636, 56, 1144, 324, 148, 475, 155, 150, 65~
+$ men1217     &lt;dbl&gt; 12, 3, 393, 22, 4, 164, 18, 7, 47, 7, 10, -3, 33, 21, 15, ~
+$ emp17       &lt;dbl&gt; 99, 16, 7686, 294, 6, 469, 145, 19, 267, 25, 57, 21, 2136,~
+$ emp12       &lt;dbl&gt; 75, 13, 7613, 281, 4, 454, 135, 32, 199, 35, 48, 21, 2134,~
+$ emp1217     &lt;dbl&gt; 24, 3, 73, 13, 2, 15, 10, -13, 68, -10, 9, 0, 2, -7, 8, 2,~
+$ mepart1217  &lt;dbl&gt; 31.97, 12.23, 23.51, 17.49, 41.38, 21.88, 18.53, -4.10, 56~
+$ menhab1217  &lt;dbl&gt; 10.66, 6.11, 25.83, 13.92, 27.59, 30.18, 11.91, 4.78, 22.9~
+$ artpop1217  &lt;chr&gt; &quot;-11262&quot;, &quot;377.38&quot;, &quot;-1001.08&quot;, &quot;425.7&quot;, &quot;1450&quot;, &quot;283.08&quot;,~
+$ surfcom20   &lt;chr&gt; &quot;15654745&quot;, &quot;9129931&quot;, &quot;24488600&quot;, &quot;16050565&quot;, &quot;6026477&quot;, ~</code></pre>
+</div>
+<div id="contrôle" class="section level2" number="2.4">
+<h2><span class="header-section-number">2.4</span> Contrôle</h2>
+<p>Un petit souci : certaines colonnes sont de type caractères, alors qu’elles devraient être de type numérique. C’est le cas de <code>surfcom20</code>, par exemple.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="lecture-des-données-de-flux.html#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">class</span>(flux<span class="sc">$</span>surfcom20)</span></code></pre></div>
+<pre><code>[1] &quot;character&quot;</code></pre>
+<p>Listons les colonnes de type caractères :</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="lecture-des-données-de-flux.html#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sapply</span>(<span class="fu">names</span>(flux), <span class="cf">function</span>(x) <span class="fu">class</span>(flux[[x]]) <span class="sc">==</span> <span class="st">&quot;character&quot;</span>) <span class="sc">%&gt;%</span> which <span class="sc">%&gt;%</span> {<span class="fu">names</span>(flux)[.]}</span></code></pre></div>
+<pre><code> [1] &quot;idcom&quot;      &quot;idcomtxt&quot;   &quot;idreg&quot;      &quot;idregtxt&quot;   &quot;iddep&quot;     
+ [6] &quot;iddeptxt&quot;   &quot;epci20txt&quot;  &quot;aav2020&quot;    &quot;libaav2020&quot; &quot;artcom0920&quot;
+[11] &quot;artpop1217&quot; &quot;surfcom20&quot; </code></pre>
+<p>Les colonnes <code>artcom0920</code>, <code>artpop1217</code> et <code>surfcom20</code> devraient être de type numérique.</p>
+<p>Recherchons les valeurs non numériques dans ces colonnes :</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="lecture-des-données-de-flux.html#cb8-1" aria-hidden="true" tabindex="-1"></a>w <span class="ot">&lt;-</span> <span class="fu">grep</span>(<span class="st">&quot;^(-|[0-9]|</span><span class="sc">\\</span><span class="st">.)*$&quot;</span>, flux<span class="sc">$</span>artcom0920, <span class="at">perl =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb8-2"><a href="lecture-des-données-de-flux.html#cb8-2" aria-hidden="true" tabindex="-1"></a>flux<span class="sc">$</span>artcom0920[<span class="sc">-</span>w] <span class="sc">%&gt;%</span> unique</span></code></pre></div>
+<pre><code>[1] &quot;NULL&quot;</code></pre>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="lecture-des-données-de-flux.html#cb10-1" aria-hidden="true" tabindex="-1"></a>w <span class="ot">&lt;-</span> <span class="fu">grep</span>(<span class="st">&quot;^(-|[0-9]|</span><span class="sc">\\</span><span class="st">.)*$&quot;</span>, flux<span class="sc">$</span>artpop1217, <span class="at">perl =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb10-2"><a href="lecture-des-données-de-flux.html#cb10-2" aria-hidden="true" tabindex="-1"></a>flux<span class="sc">$</span>artpop1217[<span class="sc">-</span>w] <span class="sc">%&gt;%</span> unique</span></code></pre></div>
+<pre><code>[1] &quot;NULL&quot;</code></pre>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="lecture-des-données-de-flux.html#cb12-1" aria-hidden="true" tabindex="-1"></a>w <span class="ot">&lt;-</span> <span class="fu">grep</span>(<span class="st">&quot;^(-|[0-9]|</span><span class="sc">\\</span><span class="st">.)*$&quot;</span>, flux<span class="sc">$</span>surfcom20, <span class="at">perl =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb12-2"><a href="lecture-des-données-de-flux.html#cb12-2" aria-hidden="true" tabindex="-1"></a>flux<span class="sc">$</span>surfcom20[<span class="sc">-</span>w] <span class="sc">%&gt;%</span> unique</span></code></pre></div>
+<pre><code>[1] &quot;NULL&quot;</code></pre>
+<p>Il s’agit des valeurs ‘NULL.’</p>
+<p>Quels sont les départements pour lesquels on a cette valeur (et donc pour lesquels on n’a pas de surface) ?</p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="lecture-des-données-de-flux.html#cb14-1" aria-hidden="true" tabindex="-1"></a>flux<span class="sc">$</span>iddep[<span class="sc">-</span>w]</span></code></pre></div>
+<pre><code>  [1] &quot;971&quot; &quot;971&quot; &quot;971&quot; &quot;971&quot; &quot;971&quot; &quot;971&quot; &quot;971&quot; &quot;971&quot; &quot;971&quot; &quot;971&quot; &quot;971&quot; &quot;971&quot;
+ [13] &quot;971&quot; &quot;971&quot; &quot;971&quot; &quot;971&quot; &quot;971&quot; &quot;971&quot; &quot;971&quot; &quot;971&quot; &quot;971&quot; &quot;971&quot; &quot;971&quot; &quot;971&quot;
+ [25] &quot;971&quot; &quot;971&quot; &quot;971&quot; &quot;971&quot; &quot;971&quot; &quot;971&quot; &quot;971&quot; &quot;971&quot; &quot;972&quot; &quot;972&quot; &quot;972&quot; &quot;972&quot;
+ [37] &quot;972&quot; &quot;972&quot; &quot;972&quot; &quot;972&quot; &quot;972&quot; &quot;972&quot; &quot;972&quot; &quot;972&quot; &quot;972&quot; &quot;972&quot; &quot;972&quot; &quot;972&quot;
+ [49] &quot;972&quot; &quot;972&quot; &quot;972&quot; &quot;972&quot; &quot;972&quot; &quot;972&quot; &quot;972&quot; &quot;972&quot; &quot;972&quot; &quot;972&quot; &quot;972&quot; &quot;972&quot;
+ [61] &quot;972&quot; &quot;972&quot; &quot;972&quot; &quot;972&quot; &quot;972&quot; &quot;972&quot; &quot;973&quot; &quot;973&quot; &quot;973&quot; &quot;973&quot; &quot;973&quot; &quot;973&quot;
+ [73] &quot;973&quot; &quot;973&quot; &quot;973&quot; &quot;973&quot; &quot;973&quot; &quot;973&quot; &quot;973&quot; &quot;973&quot; &quot;973&quot; &quot;973&quot; &quot;973&quot; &quot;973&quot;
+ [85] &quot;973&quot; &quot;973&quot; &quot;973&quot; &quot;973&quot; &quot;974&quot; &quot;974&quot; &quot;974&quot; &quot;974&quot; &quot;974&quot; &quot;974&quot; &quot;974&quot; &quot;974&quot;
+ [97] &quot;974&quot; &quot;974&quot; &quot;974&quot; &quot;974&quot; &quot;974&quot; &quot;974&quot; &quot;974&quot; &quot;974&quot; &quot;974&quot; &quot;974&quot; &quot;974&quot; &quot;974&quot;
+[109] &quot;974&quot; &quot;974&quot; &quot;974&quot; &quot;974&quot;</code></pre>
+<p>Il s’agit des départemments d’Outre-Mer.</p>
+</div>
+<div id="relecture-du-fichier" class="section level2" number="2.5">
+<h2><span class="header-section-number">2.5</span> Relecture du fichier</h2>
+<p>Nous pouvons relire le fichier en mentionnant cette ‘NULL’ comme étant NA</p>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="lecture-des-données-de-flux.html#cb16-1" aria-hidden="true" tabindex="-1"></a>flux <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">&quot;data/obs_artif_conso_com_2009_2020_V2.csv&quot;</span>, <span class="at">na =</span> <span class="fu">c</span>(<span class="st">&quot;&quot;</span>, <span class="st">&quot;NULL&quot;</span>))</span>
+<span id="cb16-2"><a href="lecture-des-données-de-flux.html#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(flux)</span></code></pre></div>
+<pre><code>Rows: 34,938
+Columns: 85
+$ idcom       &lt;chr&gt; &quot;01001&quot;, &quot;01002&quot;, &quot;01004&quot;, &quot;01005&quot;, &quot;01006&quot;, &quot;01007&quot;, &quot;010~
+$ idcomtxt    &lt;chr&gt; &quot;L&#39;Abergement-Clémenciat&quot;, &quot;L&#39;Abergement-de-Varey&quot;, &quot;Ambér~
+$ idreg       &lt;chr&gt; &quot;84&quot;, &quot;84&quot;, &quot;84&quot;, &quot;84&quot;, &quot;84&quot;, &quot;84&quot;, &quot;84&quot;, &quot;84&quot;, &quot;84&quot;, &quot;84&quot;~
+$ idregtxt    &lt;chr&gt; &quot;Auvergne-Rhône-Alpes&quot;, &quot;Auvergne-Rhône-Alpes&quot;, &quot;Auvergne-~
+$ iddep       &lt;chr&gt; &quot;01&quot;, &quot;01&quot;, &quot;01&quot;, &quot;01&quot;, &quot;01&quot;, &quot;01&quot;, &quot;01&quot;, &quot;01&quot;, &quot;01&quot;, &quot;01&quot;~
+$ iddeptxt    &lt;chr&gt; &quot;Ain&quot;, &quot;Ain&quot;, &quot;Ain&quot;, &quot;Ain&quot;, &quot;Ain&quot;, &quot;Ain&quot;, &quot;Ain&quot;, &quot;Ain&quot;, &quot;A~
+$ epci20      &lt;dbl&gt; 200069193, 240100883, 240100883, 200042497, 200040350, 240~
+$ epci20txt   &lt;chr&gt; &quot;CC de la Dombes&quot;, &quot;CC de la Plaine de l&#39;Ain&quot;, &quot;CC de la P~
+$ aav2020     &lt;chr&gt; &quot;524&quot;, &quot;000&quot;, &quot;243&quot;, &quot;002&quot;, &quot;286&quot;, &quot;243&quot;, &quot;243&quot;, &quot;286&quot;, &quot;0~
+$ libaav2020  &lt;chr&gt; &quot;Châtillon-sur-Chalaronne&quot;, &quot;Commune hors attraction des v~
+$ cateaav2020 &lt;dbl&gt; 20, 30, 11, 20, 20, 20, 20, 20, 30, 20, 20, 20, 20, 20, 20~
+$ naf09art10  &lt;dbl&gt; 8324, 1139, 79035, 6205, 0, 19333, 1337, 676, 17093, 1893,~
+$ art09act10  &lt;dbl&gt; 0, 0, 48339, 0, 0, 1783, 0, 0, 0, 0, 0, 0, 4813, 0, 0, 0, ~
+$ art09hab10  &lt;dbl&gt; 8324, 1139, 29034, 6152, 0, 14707, 1337, 676, 10834, 1533,~
+$ art09mix10  &lt;dbl&gt; 0, 0, 1662, 53, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ~
+$ art09inc10  &lt;dbl&gt; 0, 0, 0, 0, 0, 2843, 0, 0, 6259, 360, 0, 0, 10, 250, 0, 2,~
+$ naf10art11  &lt;dbl&gt; 8324, 1140, 79035, 6205, 0, 19334, 1338, 676, 17094, 1894,~
+$ art10act11  &lt;dbl&gt; 0, 0, 48339, 0, 0, 1784, 0, 0, 0, 0, 0, 0, 4813, 0, 0, 0, ~
+$ art10hab11  &lt;dbl&gt; 8324, 1140, 29034, 6152, 0, 14708, 1338, 676, 10834, 1534,~
+$ art10mix11  &lt;dbl&gt; 0, 0, 1662, 53, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ~
+$ art10inc11  &lt;dbl&gt; 0, 0, 0, 0, 0, 2842, 0, 0, 6260, 360, 0, 0, 10, 249, 0, 2,~
+$ naf11art12  &lt;dbl&gt; 0, 4638, 30959, 9185, 98, 10161, 3045, 1088, 22509, 1208, ~
+$ art11act12  &lt;dbl&gt; 0, 0, 5957, 0, 0, 0, 1419, 0, 14380, 0, 0, 0, 21760, 640, ~
+$ art11hab12  &lt;dbl&gt; 0, 258, 12752, 9029, 98, 10161, 1500, 1088, 8129, 1208, 0,~
+$ art11mix12  &lt;dbl&gt; 0, 0, 0, 106, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 16605~
+$ art11inc12  &lt;dbl&gt; 0, 4380, 12250, 50, 0, 0, 126, 0, 0, 0, 0, 0, 0, 0, 0, 0, ~
+$ naf12art13  &lt;dbl&gt; 650, 977, 14426, 2799, 0, 4418, 1847, 1314, 7824, 3992, 40~
+$ art12act13  &lt;dbl&gt; 0, 0, 5200, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0~
+$ art12hab13  &lt;dbl&gt; 650, 977, 9226, 1975, 0, 4418, 1847, 1314, 7824, 3992, 161~
+$ art12mix13  &lt;dbl&gt; 0, 0, 0, 824, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 14~
+$ art12inc13  &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2402, 0, 0, 0, 0, 0, 0, 0, 0~
+$ naf13art14  &lt;dbl&gt; 8037, 0, 14873, 0, 0, 11208, 1218, 3418, 8014, 0, 0, 0, 14~
+$ art13act14  &lt;dbl&gt; 0, 0, 4410, 0, 0, 1014, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0~
+$ art13hab14  &lt;dbl&gt; 8037, 0, 10108, 0, 0, 10194, 1218, 3418, 8014, 0, 0, 0, 14~
+$ art13mix14  &lt;dbl&gt; 0, 0, 354, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,~
+$ art13inc14  &lt;dbl&gt; 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1500, 0, 1226~
+$ naf14art15  &lt;dbl&gt; 0, 975, 29188, 0, 0, 24511, 226, 3065, 0, 0, 7984, 0, 1109~
+$ art14act15  &lt;dbl&gt; 0, 0, 691, 0, 0, 0, 0, 0, 0, 0, 0, 0, 164, 0, 0, 0, 0, 0, ~
+$ art14hab15  &lt;dbl&gt; 0, 975, 28497, 0, 0, 24511, 226, 3065, 0, 0, 7598, 0, 1093~
+$ art14mix15  &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0~
+$ art14inc15  &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 386, 0, 0, 0, 0, 0, 0, 0, 0,~
+$ naf15art16  &lt;dbl&gt; 857, 1749, 94624, 886, 1450, 14000, 2862, 6847, 1317, 0, 1~
+$ art15act16  &lt;dbl&gt; 0, 0, 34171, 0, 0, 11601, 0, 0, 0, 0, 0, 0, 80043, 0, 0, 0~
+$ art15hab16  &lt;dbl&gt; 857, 1749, 60300, 0, 1450, 2399, 2862, 6847, 1317, 0, 1449~
+$ art15mix16  &lt;dbl&gt; 0, 0, 152, 886, 0, 0, 0, 0, 0, 0, 0, 0, 677, 0, 0, 0, 0, 0~
+$ art15inc16  &lt;dbl&gt; 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0~
+$ naf16art17  &lt;dbl&gt; 1718, 1205, 45103, 16323, 0, 27673, 8959, 0, 3363, 2090, 0~
+$ art16act17  &lt;dbl&gt; 0, 0, 1069, 0, 0, 13351, 0, 0, 0, 0, 0, 0, 1505, 0, 0, 0, ~
+$ art16hab17  &lt;dbl&gt; 1718, 1205, 44034, 13831, 0, 12816, 8959, 0, 3363, 2090, 0~
+$ art16mix17  &lt;dbl&gt; 0, 0, 0, 2492, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0~
+$ art16inc17  &lt;dbl&gt; 0, 0, 0, 0, 0, 1506, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0~
+$ naf17art18  &lt;dbl&gt; 3580, 0, 76493, 3729, 1000, 12508, 1338, 2265, 978, 1781, ~
+$ art17act18  &lt;dbl&gt; 0, 0, 36327, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ~
+$ art17hab18  &lt;dbl&gt; 3580, 0, 40166, 3729, 1000, 12508, 1338, 2265, 978, 1781, ~
+$ art17mix18  &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0~
+$ art17inc18  &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5647, 0, 0, 0, 0, 0, 0, 0, 0~
+$ naf18art19  &lt;dbl&gt; 2721, 1037, 87831, 0, 3959, 19203, 2550, 1000, 700, 0, 0, ~
+$ art18act19  &lt;dbl&gt; 0, 0, 34134, 0, 0, 5757, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ~
+$ art18hab19  &lt;dbl&gt; 2721, 600, 53272, 0, 3959, 13446, 2550, 1000, 700, 0, 0, 0~
+$ art18mix19  &lt;dbl&gt; 0, 0, 425, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,~
+$ art18inc19  &lt;dbl&gt; 0, 437, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,~
+$ naf19art20  &lt;dbl&gt; 0, 1740, 13093, 25621, 0, 22992, 9419, 2020, 1707, 0, 4830~
+$ art19act20  &lt;dbl&gt; 0, 0, 4907, 0, 0, 18782, 0, 0, 0, 0, 0, 0, 0, 0, 1850, 0, ~
+$ art19hab20  &lt;dbl&gt; 0, 1740, 8157, 25621, 0, 4210, 9419, 2020, 1707, 0, 4830, ~
+$ art19mix20  &lt;dbl&gt; 0, 0, 29, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ~
+$ art19inc20  &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0~
+$ nafart0920  &lt;dbl&gt; 34211, 14600, 564660, 70953, 6507, 185341, 34139, 22369, 8~
+$ artact0920  &lt;dbl&gt; 0, 0, 223544, 0, 0, 54072, 1419, 0, 14380, 0, 0, 0, 113098~
+$ arthab0920  &lt;dbl&gt; 34211, 9783, 324580, 66489, 6507, 124078, 32594, 22369, 53~
+$ artmix0920  &lt;dbl&gt; 0, 0, 4284, 4414, 0, 0, 0, 0, 0, 0, 0, 0, 677, 0, 0, 0, 0,~
+$ artinc0920  &lt;dbl&gt; 0, 4817, 12252, 50, 0, 7191, 126, 0, 12519, 720, 8435, 0, ~
+$ artcom0920  &lt;dbl&gt; 0.22, 0.16, 2.31, 0.44, 0.11, 0.55, 0.66, 0.32, 0.27, 0.09~
+$ pop12       &lt;dbl&gt; 777, 235, 14233, 1642, 110, 2437, 739, 338, 1069, 385, 311~
+$ pop17       &lt;dbl&gt; 776, 248, 14035, 1689, 111, 2726, 752, 330, 1115, 376, 326~
+$ pop1217     &lt;dbl&gt; -1, 13, -198, 47, 1, 289, 13, -8, 46, -9, 15, -16, -73, 23~
+$ men12       &lt;dbl&gt; 303, 104, 6013, 614, 51, 979, 306, 140, 428, 148, 140, 68,~
+$ men17       &lt;dbl&gt; 315, 107, 6406, 636, 56, 1144, 324, 148, 475, 155, 150, 65~
+$ men1217     &lt;dbl&gt; 12, 3, 393, 22, 4, 164, 18, 7, 47, 7, 10, -3, 33, 21, 15, ~
+$ emp17       &lt;dbl&gt; 99, 16, 7686, 294, 6, 469, 145, 19, 267, 25, 57, 21, 2136,~
+$ emp12       &lt;dbl&gt; 75, 13, 7613, 281, 4, 454, 135, 32, 199, 35, 48, 21, 2134,~
+$ emp1217     &lt;dbl&gt; 24, 3, 73, 13, 2, 15, 10, -13, 68, -10, 9, 0, 2, -7, 8, 2,~
+$ mepart1217  &lt;dbl&gt; 31.97, 12.23, 23.51, 17.49, 41.38, 21.88, 18.53, -4.10, 56~
+$ menhab1217  &lt;dbl&gt; 10.66, 6.11, 25.83, 13.92, 27.59, 30.18, 11.91, 4.78, 22.9~
+$ artpop1217  &lt;dbl&gt; -11262.00, 377.38, -1001.08, 425.70, 1450.00, 283.08, 1162~
+$ surfcom20   &lt;dbl&gt; 15654745, 9129931, 24488600, 16050565, 6026477, 33592093, ~</code></pre>
+<p>Nous voyons qu’il n’y a plus de valeurs ‘NULL’ :</p>
+<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="lecture-des-données-de-flux.html#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">which</span>(flux<span class="sc">$</span>surfcom20 <span class="sc">==</span> <span class="st">&quot;NULL&quot;</span>)</span></code></pre></div>
+<pre><code>integer(0)</code></pre>
+
+</div>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="quelques-datavisualisations.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="traitement-de-la-donnée.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": {
+"github": false,
+"facebook": true,
+"twitter": true,
+"linkedin": false,
+"weibo": false,
+"instapaper": false,
+"vk": false,
+"whatsapp": false,
+"all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+},
+"fontsettings": {
+"theme": "white",
+"family": "sans",
+"size": 2
+},
+"edit": {
+"link": null,
+"text": null
+},
+"history": {
+"link": null,
+"text": null
+},
+"view": {
+"link": null,
+"text": null
+},
+"download": ["support.pdf", "support.epub"],
+"search": {
+"engine": "fuse",
+"options": null
+},
+"toc": {
+"collapse": "section"
+}
+});
+});
+</script>
+
+</body>
+
+</html>

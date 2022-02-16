@@ -1,0 +1,157 @@
+# Traitement de la donnée
+
+Dans ce notebook, nous allons préparer la donnée, afin d'obtenir la donnée transformée escomptée, à savoir un flux d'artificialisation par commune et par année.
+
+## Lecture des données
+Lisons les données de flux
+```{r message = FALSE, warning = FALSE}
+library(tidyverse)
+
+flux <- read_csv("data/obs_artif_conso_com_2009_2020_V2.csv")
+```
+
+## Sélection des colonnes
+Nous nous intéressons aux flux entre années et allons sélectionner seulement les colonnes utiles, à savoir, les colonnes `art09mix10`, `art10mix11`, etc...
+```{r}
+myCols <-  names(flux)[grep("^art[0-9]{2}\\S+[0-9]{2}$", names(flux))]
+myCols
+```
+
+## Transformation du format wide vers long
+Nous utiliserons **ggplot2** pour représenter les données. Nous aurons besoin, avant d'utiliser les données, de passer d'un format wide (en largeur) à un format long (en longueur).
+
+En effet, les noms de colonnes, comme `art19hab20` ou `art13mix14` portent en eux des attributs : type de flux, et année du flux, que nous aimerions bien voir apparaître dans les cellules de notre tableau.
+
+Par exemple, pour `art19hab20`, l'année du flux est l'année 2019 et concerne les flux vers l'habitat. On pourrait imaginer avoir une colonne pour l'année du flux, et une colonne pour son type.
+
+Pour `art13mix14`, le flux est concerne les flux d'artificialisation vers le mixte pour l'année 2013.
+
+Voici la différence entre un fichier de type _wide_ et un fichier de type _long_ :
+
+### Wide
+
+| id | nom | sport | ville | 
+| -- | -- | -- | -- |
+| 1 | mathieu | squash | Aix-en-Provence |
+
+### Long
+
+| id | variable | valeur |
+| -- | -- | -- |
+| 1 | nom | mathieu |
+| 1 | sport | squash |
+| 1 | ville | Aix-en-Provence |
+
+Dans notre cas, nous passerions de cette structure :
+| idcom | art19hab20 |
+| -- | -- |
+| 13001 | 111096 |
+
+à cette structure
+
+| idcom | year | type | value | 
+| -- | -- | -- | -- |
+| 13001 | 2019 | habitat | 111096 |
+
+### Transformation au format _long_ avec `gather`
+Prenons l'exemple d'Aix en Provence. Les données sont dans un format wide (le plus commun, avec les variables en colonnes) :
+```{r}
+df <- flux %>% filter(idcom == "13001")
+df[, c("idcom", "idcomtxt", myCols)]
+
+```
+
+Pour transformer au format long, nous utilisons la fonction `gather` :
+```{r}
+df <- df[, c("idcom", "idcomtxt", myCols)]
+df <- gather(df,
+             "variable", # key
+             "value",    # value
+             myCols) # variables
+df
+```
+
+La colonne `variable` comporte des valeurs telles que `art09hab10` pour le flux d'artificialisation vers l'habitat de 2009 à 2010 :
+```{r}
+unique(df$variable)
+```
+
+## Année et destination du flux
+Nous allons extraire l'année et le type (habitat, activité, mixte, inconnu) depuis le champ ` variable` :
+```{r}
+df$year <- gsub("art([0-9]{2})(\\S+)[0-9]{2}", "20\\1", df$variable)
+df$type <- gsub("art([0-9]{2})(\\S+)[0-9]{2}", "\\2", df$variable)
+```
+
+Voici le résultat:
+```{r}
+df %>% head
+```
+
+## Retraitement
+Améliorons le champ `type` pour avoir des libellés plus parlants :
+```{r}
+df <- df %>% mutate(type = case_when(
+  type == "hab" ~ "Habitat",
+  type == "act" ~ "Activité",
+  type == "mix" ~ "Mixte",
+  type == "inc" ~ "Inconnu",
+))
+```
+
+Au final, nous n'avons plus besoin de la variable variable :
+```{r}
+df$variable <- NULL
+```
+
+Voici notre fichier df au final :
+```{r}
+df
+```
+
+## Fonction `getStatsFlux`
+Créons une fonction qui retourne les flux pour une commune donnée à partir de son code INSEE :
+```{r}
+getStatsFlux <- function(flux, codeInsee) {
+  
+  # Filtre par commune
+  df <- flux %>% filter(idcom == codeInsee) 
+  
+  # Colonnes intéressantes
+  myCols <-  names(flux)[grep("^art[0-9]{2}\\S+[0-9]{2}$", names(flux))]
+  df <- df[, c("idcom", "idcomtxt", myCols)]
+  
+  # Long format
+  df <- df %>% gather("variable", # key
+                      "value",    # value
+                      myCols) # variables
+  
+  # Année et type
+  df$year <- gsub("art([0-9]{2})(\\S+)[0-9]{2}", "20\\1", df$variable)
+  df$type <- gsub("art([0-9]{2})(\\S+)[0-9]{2}", "\\2", df$variable)
+  
+  # Renomme les valeurs de type
+  df <- df %>% mutate(type = case_when(
+  type == "hab" ~ "Habitat",
+  type == "act" ~ "Activité",
+  type == "mix" ~ "Mixte",
+  type == "inc" ~ "Inconnu"))
+  
+  # Réagence les colonnes
+  df <- df[, c("idcom", "idcomtxt", "year", "type", "value")]
+  
+  return(df)
+}
+
+flux %>% getStatsFlux("13001")
+```
+
+Enregistrons cette fonction dans le fichier `helpers.R`
+
+## Data Engineering
+Pas mal d'étapes de préparation sont parfois nécessaires avant de créer des applications de dataviz.
+
+![](files/data-eng1.png)
+
+Voici la chaîne de données, assez conséquente, pour Cartofriches :
+![](files/data-eng2.png)
